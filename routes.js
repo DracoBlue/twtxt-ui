@@ -1,38 +1,58 @@
 var JSX = require('node-jsx').install(),
   React = require('react'),
   TweetsApp = React.createFactory(require('./components/TweetsApp.react')),
-  Tweet = require('./models/Tweet');
+  request = require('request'),
+  url = require('url');
 
 module.exports = {
 
   index: function(req, res) {
-    // Call static model method to get tweets in the db
-    Tweet.getTweets(0,0, function(tweets, pages) {
+    var markup = React.renderToString(
+      TweetsApp({
+        tweets: []
+      })
+    );
 
-      // Render React to a string, passing in our fetched tweets
-      var markup = React.renderToString(
-        TweetsApp({
-          tweets: tweets
-        })
-      );
-
-      // Render our 'home' template
-      res.render('home', {
-        markup: markup, // Pass rendered react markup
-        state: JSON.stringify(tweets) // Pass current state to client side
-      });
-
+    // Render our 'home' template
+    res.render('home', {
+      markup: markup, // Pass rendered react markup
+      state: JSON.stringify([]) // Pass current state to client side
     });
   },
 
-  page: function(req, res) {
+  fetchTwtxt: function(req, res) {
     // Fetch tweets by page via param
-    Tweet.getTweets(req.params.page, req.params.skip, function(tweets) {
 
-      // Render as JSON
-      res.send(tweets);
+    if (!req.query.url) {
+      res.sendStatus(400);
+      res.end();
 
+      return ;
+    }
+
+    try {
+      var parts = url.parse(req.query.url);
+
+      if (!parts["hostname"] || !parts["protocol"]) {
+        res.sendStatus(400);
+        res.end();
+
+        return ;
+      }
+    } catch (err) {
+      res.sendStatus(400);
+      res.end();
+
+      return ;
+    }
+
+    request(req.query.url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        res.set('Content-Type', 'text/plain');
+        res.send(body);
+      }
     });
   }
+
 
 }

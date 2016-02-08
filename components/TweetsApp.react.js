@@ -4,6 +4,7 @@ var React = require('react');
 var Tweets = require('./Tweets.react.js');
 var Loader = require('./Loader.react.js');
 var NotificationBar = require('./NotificationBar.react.js');
+var TweetFetcher = require('./TweetFetcher.js');
 
 // Export the TweetsApp component
 module.exports = TweetsApp = React.createClass({
@@ -14,7 +15,20 @@ module.exports = TweetsApp = React.createClass({
     // Get current application state
     var updated = this.state.tweets;
 
-    // Increment the unread count
+    var isNew = true;
+
+    updated.forEach(function(olderTweet) {
+      if (olderTweet.id == tweet.id) {
+        console.log('tweet', olderTweet, 'is old!');
+        isNew = false;
+      }
+    });
+
+    if (!isNew) {
+      return ;
+    }
+
+  // Increment the unread count
     var count = this.state.count + 1;
 
     // Increment the skip count
@@ -22,6 +36,13 @@ module.exports = TweetsApp = React.createClass({
 
     // Add tweet to the beginning of the tweets array
     updated.unshift(tweet);
+
+    updated.sort(function(a, b) {
+      if (a.timestamp.unix() == b.timestamp.unix()) {
+        return 0;
+      }
+      return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
+     });
 
     // Set application state
     this.setState({tweets: updated, count: count, skip: skip});
@@ -120,7 +141,7 @@ module.exports = TweetsApp = React.createClass({
       this.setState({paging: true, page: this.state.page + 1});
 
       // Get the next page of tweets from the server
-      this.getPage(this.state.page);
+      //this.getPage(this.state.page);
 
     }
   },
@@ -151,16 +172,35 @@ module.exports = TweetsApp = React.createClass({
 
     // Preserve self reference
     var self = this;
+    var that = this;
 
-    // Initialize socket.io
-    var socket = io.connect();
+    var fetcher = new TweetFetcher();
 
-    // On tweet event emission...
-    socket.on('tweet', function (data) {
+    /* FIXME: this is available for alpha testers */
+    window.fetcher = fetcher;
 
-        // Add a tweet to our queue
-        self.addTweet(data);
+    fetcher.fetchAll(function(tweets) {
+      var updated = that.state.tweets;
 
+      tweets.forEach(function(tweet) {
+        tweet.active = true;
+        updated.push(tweet);
+      });
+
+      updated.sort(function(a, b) {
+        if (a.timestamp.unix() == b.timestamp.unix()) {
+          return 0;
+        }
+        return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
+      });
+
+      that.setState({tweets: updated, count: 0});
+
+      fetcher.notifyOnNewTweets(function(tweets) {
+        tweets.forEach(function(tweet) {
+          self.addTweet(tweet);
+        })
+      });
     });
 
     // Attach scroll event to the window for infinity paging
@@ -170,11 +210,10 @@ module.exports = TweetsApp = React.createClass({
 
   // Render the component
   render: function(){
-
+    // <Loader paging={this.state.paging}/>
     return (
       <div className="tweets-app">
         <Tweets tweets={this.state.tweets} />
-        <Loader paging={this.state.paging}/>
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets}/>
       </div>
     )

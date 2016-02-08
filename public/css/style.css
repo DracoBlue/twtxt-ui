@@ -20,8 +20,11 @@ footer
     z-index: 999;
     bottom: 0;
 
+    font-size: 12px;
     width: 100%;
     padding: 20px;
+
+    text-align: center;
 
     background: #abd9ff;
 }
@@ -33,16 +36,11 @@ footer span
     font-weight: bold;
 }
 
-footer a.link-back
+footer a
 {
     text-decoration: none;
 
     color: #2c3e50;
-}
-
-footer .twitter-share-button
-{
-    margin-right: 10px;
 }
 
 footer span.update-message
@@ -149,19 +147,19 @@ footer .update-message
             transition: 1s all ease;
 }
 
-.tweet .avatar
-{
-    position: relative;
+/*.tweet .avatar*/
+/*{*/
+    /*position: relative;*/
 
-    display: inline-block;
-    float: left;
+    /*display: inline-block;*/
+    /*float: left;*/
 
-    width: 48px;
-    margin: 10px;
+    /*width: 48px;*/
+    /*margin: 10px;*/
 
-    border: 2px solid #ccc;
-    border-radius: 48px;
-}
+    /*border: 2px solid #ccc;*/
+    /*border-radius: 48px;*/
+/*}*/
 
 .tweet blockquote
 {
@@ -170,7 +168,8 @@ footer .update-message
     display: inline-block;
     float: right;
 
-    width: calc(100% - 72px);
+    width: 100%;
+    /*width: calc(100% - 72px);*/
     margin: 0;
     padding: 10px;
 }
@@ -239,12 +238,5 @@ footer .update-message
     footer a.link-back
     {
         font-size: 0;
-    }
-    footer a:after
-    {
-        font-size: 12px;
-
-        content: '← Back To Learning React';
-
     }
 }
