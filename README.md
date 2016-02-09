@@ -7,6 +7,13 @@ A simple web driven ui for twtxt (uses local storage and a nodejs server).
 - Serverside: [nodejs](https://nodejs.org)
 - Clientside: A Recent Webbrowser
 
+
+## Demo
+
+Not available, yet. But here is a screenshot:
+
+![twtxt-ui screenshot](./docs/screenshot.png)
+
 ## How to Use
 
 1. Clone the repo: `git clone git@github.com:DracoBlue/twtxt-ui`
