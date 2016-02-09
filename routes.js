@@ -2,7 +2,8 @@ var JSX = require('node-jsx').install(),
   React = require('react'),
   TweetsApp = React.createFactory(require('./components/TweetsApp.react')),
   request = require('request'),
-  url = require('url');
+  url = require('url'),
+  md5 = require('md5');
 
 module.exports = {
 
@@ -49,6 +50,7 @@ module.exports = {
     request(req.query.url, function (error, response, body) {
       if (!error && response.statusCode == 200) {
         res.set('Content-Type', 'text/plain');
+        res.set('Etag', md5(body.toString()));
         res.send(body);
       }
     });
