@@ -19,7 +19,6 @@ module.exports = TweetsApp = React.createClass({
 
     updated.forEach(function(olderTweet) {
       if (olderTweet.id == tweet.id) {
-        console.log('tweet', olderTweet, 'is old!');
         isNew = false;
       }
     });

@@ -2,6 +2,7 @@ var request = require('request');
 var moment = require('moment');
 var store = require('store');
 var md5 = require('md5');
+var urlUtils = require('url');
 
 var TweetFetcher = function() {
 
@@ -84,6 +85,33 @@ TweetFetcher.prototype.notifyOnNewTweets = function(cb) {
   this.onNewTweets = cb;
 };
 
+var xml_special_to_escaped_one_map = {
+  '&': '&',
+  '"': '"',
+  '<': '&lt;',
+  '>': '&gt;'
+};
+
+var escaped_one_to_xml_special_map = {
+  '&': '&',
+  '"': '"',
+  '&lt;': '<',
+  '&gt;': '>'
+};
+
+TweetFetcher.prototype.encodeXml = function(string) {
+  return string.replace(/([\&"<>])/g, function(str, item) {
+    return xml_special_to_escaped_one_map[item];
+  });
+};
+
+TweetFetcher.prototype.decodeXml = function(string) {
+  return string.replace(/("|<|>|&)/g,
+    function(str, item) {
+      return escaped_one_to_xml_special_map[item];
+    });
+};
+
 TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
   var that = this;
   var tweets = [];
@@ -95,6 +123,23 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
       var match = row.match(/^([^\t]+)\t(.+)/);
 
       if (match && moment(match[1]).isValid()) {
+
+        var body = match[2].trim();
+        if (body) {
+          var currentMatch = body.match(/@<([^ ]+) ([^> ]+)>/);
+          while (currentMatch) {
+            body = body.replace(currentMatch[0], '<a href="' + that.encodeXml(currentMatch[2]) + '" class="username">@' + that.encodeXml(currentMatch[1]) + '</a>');
+            currentMatch = body.match(/@<([^ ]+) ([^> ]+)>/);
+          }
+
+          currentMatch = body.match(/@<([^> ]+)>/);
+          while (currentMatch) {
+            body = body.replace(currentMatch[0], '<a href="' + that.encodeXml(currentMatch[1]) + '" class="username">@' + that.encodeXml(urlUtils.parse(currentMatch[1])['hostname'] || currentMatch[1]) + '</a>');
+            currentMatch = body.match(/@<([^> ]+)>/);
+          }
+        }
+
+
         tweets.push({
           id: md5(url + "\t" + row),
           timestamp: moment(match[1]),
@@ -102,7 +147,7 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
           screenname: nickname,
           author: nickname,
           author_url: url,
-          body: match[2].trim()
+          body: body
         });
       }
     }

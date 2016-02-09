@@ -14,7 +14,7 @@ module.exports = Tweet = React.createClass({
             <a href={tweet.author_url}>{tweet.author}</a>
             <span className="screen-name">{tweet.displayTime}</span>
           </cite>
-          <span className="content">{tweet.body}</span>
+          <span className="content" dangerouslySetInnerHTML={{__html: tweet.body}}></span>
         </blockquote>
       </li>
     )
