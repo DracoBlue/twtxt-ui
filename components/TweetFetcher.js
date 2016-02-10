@@ -1,4 +1,6 @@
-var request = require('request');
+/* this global is just to make browserify properly pack whatwg-fetch (they use the self-variable!) */
+global.self = global;
+var fetch = (typeof window !== "undefined" && window.fetch) ||  require('whatwg-fetch');
 var moment = require('moment');
 var store = require('store');
 var md5 = require('md5');
@@ -61,21 +63,25 @@ TweetFetcher.prototype.fetchAll = function(cb) {
   store.get('following').forEach(function(user) {
     var url = user.url;
 
-    request({
-      "url": document.location.protocol + "//" + document.location.host + "/api/fetchTwTxt", "qs": {"url":url}}, function(err, response, body) {
-      //console.log('err', err, 'response', response, "body", body);
+    fetch("/api/fetchTwTxt?url=" + encodeURIComponent(url)).then(function(response) {
+        return response.text();
+    }).then(function(body) {
       itemsLeft -= 1;
 
-      if (!err) {
-        that.parseRawTweets(user.nickname, url, body).forEach(function(tweet) {
-          tweets.push(tweet);
-        });
-      }
+      that.parseRawTweets(user.nickname, url, body).forEach(function(tweet) {
+        tweets.push(tweet);
+      });
 
       if (!itemsLeft) {
         cb(tweets);
       }
+        
+    }).catch(function() {
+      itemsLeft -= 1;
 
+      if (!itemsLeft) {
+        cb(tweets);
+      }
     });
   });
 };
