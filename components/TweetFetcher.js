@@ -131,6 +131,7 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
       if (match && moment(match[1]).isValid()) {
 
         var body = match[2].trim();
+
         if (body) {
           var currentMatch = body.match(/@<([^ ]+) ([^> ]+)>/);
           while (currentMatch) {
@@ -145,6 +146,7 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
           }
         }
 
+        body = body.replace(/ (http|https)(:\/\/[^\s<>"']+)/g, ' <a href="$1$2" class="external-link">$1$2</a>');
 
         tweets.push({
           id: md5(url + "\t" + row),
