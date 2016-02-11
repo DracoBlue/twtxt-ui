@@ -68,7 +68,7 @@ TweetFetcher.prototype.fetchAll = function(cb) {
       res.on('data', function(chunk) {
         body.push(chunk);
       }).on('end', function() {
-        body = Buffer.concat(body).toString();
+        body = body.join("");
         itemsLeft -= 1;
 
         that.parseRawTweets(user.nickname, url, body).forEach(function(tweet) {
