@@ -1,10 +1,8 @@
-/* this global is just to make browserify properly pack whatwg-fetch (they use the self-variable!) */
-global.self = global;
-var fetch = (typeof window !== "undefined" && window.fetch) ||  require('whatwg-fetch');
 var moment = require('moment');
 var store = require('store');
 var md5 = require('md5');
 var urlUtils = require('url');
+var http = require('http');
 
 var TweetFetcher = function() {
 
@@ -63,26 +61,33 @@ TweetFetcher.prototype.fetchAll = function(cb) {
   store.get('following').forEach(function(user) {
     var url = user.url;
 
-    fetch("/api/fetchTwTxt?url=" + encodeURIComponent(url)).then(function(response) {
-        return response.text();
-    }).then(function(body) {
-      itemsLeft -= 1;
 
-      that.parseRawTweets(user.nickname, url, body).forEach(function(tweet) {
-        tweets.push(tweet);
+    http.get("/api/fetchTwTxt?url=" + encodeURIComponent(url), function(res) {
+
+      var body = [];
+      res.on('data', function(chunk) {
+        body.push(chunk);
+      }).on('end', function() {
+        body = Buffer.concat(body).toString();
+        itemsLeft -= 1;
+
+        that.parseRawTweets(user.nickname, url, body).forEach(function(tweet) {
+          tweets.push(tweet);
+        });
+
+        if (!itemsLeft) {
+          cb(tweets);
+        }
       });
 
-      if (!itemsLeft) {
-        cb(tweets);
-      }
-        
-    }).catch(function() {
-      itemsLeft -= 1;
+      }).on('error', function (e) {
+        itemsLeft -= 1;
 
-      if (!itemsLeft) {
-        cb(tweets);
+        if (!itemsLeft) {
+          cb(tweets);
+        }
       }
-    });
+    );
   });
 };
 
