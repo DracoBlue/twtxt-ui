@@ -15,6 +15,10 @@ var TweetFetcher = function() {
   }
 };
 
+TweetFetcher.prototype.login = function(url) {
+  store.set('url', url);
+};
+
 TweetFetcher.prototype.follow = function(nickname, url) {
   var following = [];
 

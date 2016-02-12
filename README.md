@@ -1,6 +1,6 @@
 # Twtxt UI for Webbrowser
 
-A simple web driven ui for twtxt (uses local storage and a nodejs server).
+A simple web driven ui for twtxt (uses local storage and a nodejs server). Demo:
 
 ## Requirements:
 
@@ -10,7 +10,9 @@ A simple web driven ui for twtxt (uses local storage and a nodejs server).
 
 ## Demo
 
-Not available, yet. But here is a screenshot:
+At: <https://web.twtxt.org>
+
+Screenshot:
 
 ![twtxt-ui screenshot](./docs/screenshot.png)
 
@@ -25,7 +27,22 @@ Not available, yet. But here is a screenshot:
 
 ## Usage
 
-So far there is no fancy UI to add new users. So you have to open the JS-Console in your browser and type:
+So far there is no fancy UI to add new users. So you have to open the JS-Console in your browser and type.
+This information will be visible after page refresh, because the
+information is stored in the localStorage of your browser.
+
+### Login
+
+This
+
+``` javascript
+fetcher.login('https://dracoblue.net/twtxt.txt');
+```
+
+will load the mentions tab with your information.
+
+
+### Follow/Unfollow
 
 ``` javascript
 fetcher.follow('dracoblue', 'https://dracoblue.net/twtxt.txt');
@@ -46,9 +63,6 @@ fetcher.follow('https://dracoblue.net/twtxt.txt');
 ```
 
 to unfollow an account. No new updates will be visible in your timeline.
-
-All followed accounts will be visible after page refresh, because the information is stored in the localStorage of your
-browser.
 
 ## Contributions
 
