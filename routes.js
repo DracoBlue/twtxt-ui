@@ -10,7 +10,8 @@ module.exports = {
   index: function(req, res) {
     var markup = React.renderToString(
       TweetsApp({
-        tweets: []
+        tweets: [],
+        mentions: []
       })
     );
 

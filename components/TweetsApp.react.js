@@ -2,6 +2,8 @@
 
 var React = require('react');
 var Tweets = require('./Tweets.react.js');
+var Mentions = require('./Mentions.react.js');
+var Footer = require('./Footer.react.js');
 var Loader = require('./Loader.react.js');
 var NotificationBar = require('./NotificationBar.react.js');
 var TweetFetcher = require('./TweetFetcher.js');
@@ -48,6 +50,45 @@ module.exports = TweetsApp = React.createClass({
 
   },
 
+  // Method to add a tweet to our mentions
+  addMention: function(tweet){
+
+    // Get current application state
+    var updated = this.state.mentions;
+
+    var isNew = true;
+
+    updated.forEach(function(olderTweet) {
+      if (olderTweet.id == tweet.id) {
+        isNew = false;
+      }
+    });
+
+    if (!isNew) {
+      return ;
+    }
+
+    // Increment the unread count
+    var count = this.state.mentions_count + 1;
+
+    // Increment the skip count
+    var skip = this.state.mentions_skip + 1;
+
+    // Add tweet to the beginning of the tweets array
+    updated.unshift(tweet);
+
+    updated.sort(function(a, b) {
+      if (a.timestamp.unix() == b.timestamp.unix()) {
+        return 0;
+      }
+      return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
+    });
+
+    // Set application state
+    this.setState({mentions: updated, mentions_count: count, mentions_skip: skip});
+
+  },
+
   // Method to get JSON from server by page
   getPage: function(page){
 
@@ -89,6 +130,14 @@ module.exports = TweetsApp = React.createClass({
     // Set application state (active tweets + reset unread count)
     this.setState({tweets: updated, count: 0});
 
+  },
+
+  showTimelineTab: function(){
+    this.setState({tab: "timeline"});
+  },
+
+  showMentionsTab: function(){
+    this.setState({tab: "mentions"});
   },
 
   // Method to load tweets fetched from the server
@@ -152,11 +201,15 @@ module.exports = TweetsApp = React.createClass({
 
     // Set initial application state using props
     return {
-      tweets: props.tweets,
+      tweets: props.tweets || [],
+      mentions: props.mentions || [],
+      tab: 'timeline',
       count: 0,
+      mentions_count: 0,
       page: 0,
       paging: false,
       skip: 0,
+      mentions_skip: 0,
       done: false
     };
 
@@ -202,6 +255,30 @@ module.exports = TweetsApp = React.createClass({
       });
     });
 
+    fetcher.fetchAllMentions(function(tweets) {
+      var updated = that.state.mentions;
+
+      tweets.forEach(function(tweet) {
+        tweet.active = true;
+        updated.push(tweet);
+      });
+
+      updated.sort(function(a, b) {
+        if (a.timestamp.unix() == b.timestamp.unix()) {
+          return 0;
+        }
+        return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
+      });
+
+      that.setState({mentions: updated, mentions_count: 0});
+
+      fetcher.notifyOnNewMentions(function(tweets) {
+        tweets.forEach(function(tweet) {
+          self.addMention(tweet);
+        })
+      });
+    });
+
     // Attach scroll event to the window for infinity paging
     window.addEventListener('scroll', this.checkWindowScroll);
 
@@ -211,9 +288,11 @@ module.exports = TweetsApp = React.createClass({
   render: function(){
     // <Loader paging={this.state.paging}/>
     return (
-      <div className="tweets-app">
+      <div className={"tweets-app show-" + this.state.tab}>
         <Tweets tweets={this.state.tweets} />
+        <Mentions tweets={this.state.mentions} />
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets}/>
+        <Footer tab={this.state.tab} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab}/>
       </div>
     )
 

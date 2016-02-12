@@ -3,7 +3,7 @@
 var React = require('react');
 var Tweet = require('./Tweet.react.js');
 
-module.exports = Tweets = React.createClass({
+module.exports = Mentions = React.createClass({
 
   // Render our tweets
   render: function(){
@@ -17,7 +17,7 @@ module.exports = Tweets = React.createClass({
 
     // Return ul filled with our mapped tweets
     return (
-      <ul className="timeline tweets">{content}</ul>
+      <ul className="mentions tweets">{content}</ul>
     )
 
   }

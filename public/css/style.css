@@ -33,7 +33,6 @@ footer a,
 footer span
 {
     font-size: 12px;
-    font-weight: bold;
 }
 
 footer a
@@ -54,6 +53,14 @@ footer .twitter-share-button,
 footer .update-message
 {
     float: right;
+}
+
+footer.show-mentions a.mentions {
+    font-weight: bold;
+}
+
+footer.show-timeline a.timeline {
+    font-weight: bold;
 }
 
 .loader
@@ -108,6 +115,14 @@ footer .update-message
 .notification-bar a
 {
     color: white;
+}
+
+.tweets-app.show-mentions .timeline.tweets {
+    display: none;
+}
+
+.tweets-app.show-timeline .mentions.tweets {
+    display: none;
 }
 
 .tweets

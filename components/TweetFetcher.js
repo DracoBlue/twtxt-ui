@@ -52,6 +52,36 @@ TweetFetcher.prototype.initializeTimer = function() {
   }, 10000);
 };
 
+TweetFetcher.prototype.fetchAllMentions = function(cb) {
+  var that = this;
+
+  var tweets = [];
+
+  var url = store.get('url') || 'https://buckket.org/twtxt.txt';
+
+  http.get("https://registry.twtxt.org/api/plain/mentions?url=" + encodeURIComponent(url), function(res) {
+
+    var body = [];
+    res.on('data', function(chunk) {
+      body.push(chunk);
+    }).on('end', function() {
+      body = body.join("");
+
+      console.log(body);
+      that.parseRawMentions(body).forEach(function(tweet) {
+        tweets.push(tweet);
+      });
+
+
+      cb(tweets);
+    });
+
+  }).on('error', function (e) {
+      cb([]);
+    }
+  );
+};
+
 TweetFetcher.prototype.fetchAll = function(cb) {
   var that = this;
 
@@ -157,7 +187,6 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
           id: md5(url + "\t" + row),
           timestamp: moment(match[1]),
           displayTime: moment(match[1]).format('YYYY/MM/DD HH:mm'),
-          screenname: nickname,
           author: nickname,
           author_url: url,
           body: body
@@ -167,6 +196,77 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
   });
 
   return tweets;
+};
+
+TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
+  var that = this;
+  var tweets = [];
+
+  rawTweets.split("\n").forEach(function(row) {
+    row = (row || "").trim();
+
+    if (row) {
+      var match = row.match(/^([^\t]+)\t([^\t]+)\t(.+)/);
+
+      if (match && moment(match[2]).isValid()) {
+        var author = that.extractAuthor(match[1]);
+
+        var body = match[3].trim();
+
+        if (body) {
+          var currentMatch = body.match(/@<([^ ]+) ([^> ]+)>/);
+          while (currentMatch) {
+            body = body.replace(currentMatch[0], '<a href="' + that.encodeXml(currentMatch[2]) + '" class="username">@' + that.encodeXml(currentMatch[1]) + '</a>');
+            currentMatch = body.match(/@<([^ ]+) ([^> ]+)>/);
+          }
+
+          currentMatch = body.match(/@<([^> ]+)>/);
+          while (currentMatch) {
+            body = body.replace(currentMatch[0], '<a href="' + that.encodeXml(currentMatch[1]) + '" class="username">@' + that.encodeXml(urlUtils.parse(currentMatch[1])['hostname'] || currentMatch[1]) + '</a>');
+            currentMatch = body.match(/@<([^> ]+)>/);
+          }
+        }
+
+        body = body.replace(/ (http|https)(:\/\/[^\s<>"']+)/g, ' <a href="$1$2" class="external-link">$1$2</a>');
+
+        tweets.push({
+          id: md5(author.url + "\t" + row),
+          timestamp: moment(match[1]),
+          displayTime: moment(match[1]).format('YYYY/MM/DD HH:mm'),
+          author: author.nickname,
+          author_url: author.url,
+          body: body
+        });
+      }
+    }
+  });
+
+  return tweets;
+};
+
+TweetFetcher.prototype.extractAuthor = function(string) {
+    console.log('author', string);
+
+  var currentMatch = string.match(/@<([^ ]+) ([^> ]+)>/);
+  if (currentMatch) {
+    return {
+      "nickname": currentMatch[1],
+      "url": currentMatch[2]
+    };
+  }
+
+  var currentMatch = string.match(/@<([^> ]+)>/);
+  if (currentMatch) {
+    return {
+      "nickname": currentMatch[1],
+      "url": currentMatch[1]
+    };
+  }
+
+  return {
+    "nickname": string,
+    "url": string
+  }
 };
 
 
