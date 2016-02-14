@@ -22,23 +22,32 @@ footer
 
     font-size: 12px;
     width: 100%;
-    padding: 20px;
+    padding: 2px;
 
     text-align: center;
 
     background: #abd9ff;
 }
 
-footer a,
-footer span
+footer
 {
     font-size: 12px;
+    color: #2c3e50;
 }
 
-footer a
+footer a.tab
 {
     text-decoration: none;
+    border: 2px solid #2c3e50;
+    background-color: #2c3e50;
+    color: #ffffff;
+    padding: 0.5em;
+    display: inline-block;
+}
 
+footer a.external-link
+{
+    text-decoration: none;
     color: #2c3e50;
 }
 
@@ -55,12 +64,16 @@ footer .update-message
     float: right;
 }
 
-footer.show-mentions a.mentions {
+footer.show-mentions .tab.mentions {
+    background-color: #ffffff;
     font-weight: bold;
+    color: #2c3e50;
 }
 
-footer.show-timeline a.timeline {
+footer.show-timeline .tab.timeline {
+    background-color: #ffffff;
     font-weight: bold;
+    color: #2c3e50;
 }
 
 .loader
