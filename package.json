@@ -13,6 +13,7 @@
     "express": "~4.9.7",
     "express-handlebars": "~1.1.0",
     "md5": "^2.0.0",
+    "memcached": "^2.2.1",
     "moment": "^2.11.2",
     "node-jsx": "~0.13.3",
     "react": "~0.14.7",

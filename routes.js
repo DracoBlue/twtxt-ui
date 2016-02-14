@@ -1,9 +1,14 @@
 var JSX = require('node-jsx').install(),
   React = require('react'),
   TweetsApp = React.createFactory(require('./components/TweetsApp.react')),
-  request = require('request'),
   url = require('url'),
-  md5 = require('md5');
+  md5 = require('md5'),
+  https = require('https'),
+  http = require('http'),
+  Memcached = require('memcached');
+
+
+var cache = new Memcached((process.env.MEMCACHED_HOST || "localhost") + ":" + (process.env.MEMCACHED_PORT || "11211"))
 
 module.exports = {
 
@@ -32,30 +37,69 @@ module.exports = {
       return ;
     }
 
-    try {
-      var parts = url.parse(req.query.url);
+    var client = http;
+    var urlParts = url.parse(req.query.url);
 
-      if (!parts["hostname"] || !parts["protocol"]) {
-        res.sendStatus(400);
-        res.end();
-
-        return ;
-      }
-    } catch (err) {
+    if (!urlParts["hostname"] || !urlParts["protocol"]) {
       res.sendStatus(400);
       res.end();
 
       return ;
     }
 
-    request(req.query.url, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        res.set('Content-Type', 'text/plain');
-        res.set('Etag', md5(body.toString()));
-        res.send(body);
+    if (urlParts['protocol'] === "https:") {
+      client = https;
+    }
+
+    var options = {
+      hostname: urlParts['hostname'],
+      port: urlParts['port'] || (urlParts['protocol'] === "https:" ? 443 : 80),
+      path: urlParts['path'],
+      method: 'GET',
+      headers: {
+        "User-Agent": "twtxt-registry/dev"
       }
+    };
+
+    var key = md5(req.query.url);
+
+    cache.get('content-' + key, function(err, memcacheContent) {
+      cache.get('last-modified-since-' + key, function(err, memcacheLastModified) {
+
+        if (memcacheLastModified && memcacheContent) {
+          options.headers['If-Modified-Since'] = memcacheLastModified;
+        }
+
+        var req = client.request(options, function(clientRes) {
+          var body = [];
+          clientRes.on('data', function(chunk) {
+            body.push(chunk);
+          }).on('end', function() {
+            if (clientRes.statusCode == 304) {
+              res.set('Content-Type', 'text/plain');
+              res.set('Etag', md5(memcacheContent));
+              res.send(memcacheContent);
+              return ;
+            }
+            body = Buffer.concat(body).toString();
+
+            if (clientRes.headers['last-modified']) {
+              cache.set('last-modified-since-' + key, clientRes.headers['last-modified'], 60*60*24, function() {
+              });
+              cache.set('content-' + key, body, 60*60*24, function() {
+              });
+            }
+
+            res.set('Content-Type', 'text/plain');
+            res.set('Etag', md5(body));
+            res.send(body);
+          });
+
+        }).on('error', function (e) {
+
+        });
+        req.end();
+      });
     });
   }
-
-
-}
+};
