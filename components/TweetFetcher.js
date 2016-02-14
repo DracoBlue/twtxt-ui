@@ -250,8 +250,8 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
 
         tweets.push({
           id: md5(author.url + "\t" + row),
-          timestamp: moment(match[1]),
-          displayTime: moment(match[1]).format('YYYY/MM/DD HH:mm'),
+          timestamp: moment(match[2]),
+          displayTime: moment(match[2]).format('YYYY/MM/DD HH:mm'),
           author: author.nickname,
           author_url: author.url,
           body: body
