@@ -29,12 +29,19 @@ TweetFetcher.prototype.follow = function(nickname, url) {
   following.push({
     "nickname": nickname,
     "url": url
-  })
+  });
 
   store.set('following', following);
+
+  if (this.onUpdatedFollowing) {
+    setTimeout(function() {
+      that.onUpdatedFollowing(following);
+    });
+  }
 };
 
 TweetFetcher.prototype.unfollow = function(nicknameOrUrl) {
+  var that = this;
   var following = [];
 
   store.get('following').forEach(function(user) {
@@ -44,6 +51,12 @@ TweetFetcher.prototype.unfollow = function(nicknameOrUrl) {
   });
 
   store.set('following', following);
+
+  if (this.onUpdatedFollowing) {
+    setTimeout(function() {
+      that.onUpdatedFollowing(following);
+    });
+  }
 };
 
 TweetFetcher.prototype.initializeTweetsTimer = function() {
@@ -96,6 +109,21 @@ TweetFetcher.prototype.fetchAllMentions = function(cb) {
   );
 };
 
+TweetFetcher.prototype.fetchAllFollowing = function(cb) {
+  var that = this;
+
+  var users = [];
+
+  store.get('following').forEach(function(user) {
+    user.unfollow = function() {
+      that.unfollow(user.url);
+    };
+    users.push(user);
+  });
+
+  cb(users);
+};
+
 TweetFetcher.prototype.fetchAll = function(cb) {
   var that = this;
 
@@ -143,6 +171,10 @@ TweetFetcher.prototype.notifyOnNewTweets = function(cb) {
 TweetFetcher.prototype.notifyOnNewMentions = function(cb) {
   this.initializeMentionsTimer();
   this.onNewMentions = cb;
+};
+
+TweetFetcher.prototype.notifyOnUpdatedFollowing = function(cb) {
+  this.onUpdatedFollowing = cb;
 };
 
 var xml_special_to_escaped_one_map = {

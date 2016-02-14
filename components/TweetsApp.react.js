@@ -3,6 +3,7 @@
 var React = require('react');
 var Tweets = require('./Tweets.react.js');
 var Mentions = require('./Mentions.react.js');
+var Following = require('./Following.react.js');
 var Footer = require('./Footer.react.js');
 var Loader = require('./Loader.react.js');
 var NotificationBar = require('./NotificationBar.react.js');
@@ -140,6 +141,10 @@ module.exports = TweetsApp = React.createClass({
     this.setState({tab: "mentions"});
   },
 
+  showFollowingTab: function(){
+    this.setState({tab: "following"});
+  },
+
   // Method to load tweets fetched from the server
   loadPagedTweets: function(tweets){
 
@@ -203,6 +208,7 @@ module.exports = TweetsApp = React.createClass({
     return {
       tweets: props.tweets || [],
       mentions: props.mentions || [],
+      following: props.following || [],
       tab: 'timeline',
       count: 0,
       mentions_count: 0,
@@ -279,6 +285,39 @@ module.exports = TweetsApp = React.createClass({
       });
     });
 
+    fetcher.fetchAllFollowing(function(users) {
+      var updated = that.state.following;
+
+      users.forEach(function(user) {
+        user.active = true;
+        updated.push(user);
+      });
+
+      updated.sort(function(a, b) {
+        if (a.nickname == b.nickname) {
+          return 0;
+        }
+        return a.nickname > b.nickname ? -1 : 1;
+      });
+
+      that.setState({following: updated});
+
+      fetcher.notifyOnUpdatedFollowing(function(users) {
+        users.forEach(function(user) {
+          user.active = true;
+        });
+
+        users.sort(function(a, b) {
+          if (a.nickname == b.nickname) {
+            return 0;
+          }
+          return a.nickname > b.nickname ? -1 : 1;
+        });
+
+        that.setState({following: users});
+      });
+    });
+
     // Attach scroll event to the window for infinity paging
     window.addEventListener('scroll', this.checkWindowScroll);
 
@@ -291,8 +330,9 @@ module.exports = TweetsApp = React.createClass({
       <div className={"tweets-app show-" + this.state.tab}>
         <Tweets tweets={this.state.tweets} />
         <Mentions tweets={this.state.mentions} />
+        <Following following={this.state.following} />
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets} />
-        <Footer tab={this.state.tab} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} />
+        <Footer tab={this.state.tab} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} />
       </div>
     )
 

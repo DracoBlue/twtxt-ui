@@ -76,6 +76,12 @@ footer.show-timeline .tab.timeline {
     color: #2c3e50;
 }
 
+footer.show-following .tab.following {
+    background-color: #ffffff;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
 .loader
 {
     text-align: center;
@@ -130,13 +136,21 @@ footer.show-timeline .tab.timeline {
     color: white;
 }
 
-.tweets-app.show-mentions .timeline.tweets {
+.tweets-app.show-mentions .timeline.tweets,
+.tweets-app.show-mentions .following.users {
     display: none;
 }
 
-.tweets-app.show-timeline .mentions.tweets {
+.tweets-app.show-timeline .mentions.tweets,
+.tweets-app.show-timeline .following.users {
     display: none;
 }
+
+.tweets-app.show-following .mentions.tweets,
+.tweets-app.show-following .timeline.tweets {
+    display: none;
+}
+
 
 .tweets
 {
@@ -251,6 +265,15 @@ footer.show-timeline .tab.timeline {
 .tweet:after
 {
     clear: both;
+}
+
+.button {
+    border: 2px solid #8EC3EF;
+    background-color: #abd9ff;
+    color: #5E7892;
+    display: inline-block;
+    padding: 0.1em 0.2em;
+    text-decoration: none;
 }
 
 @media (max-width: 650px)
