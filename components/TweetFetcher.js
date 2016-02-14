@@ -46,12 +46,22 @@ TweetFetcher.prototype.unfollow = function(nicknameOrUrl) {
   store.set('following', following);
 };
 
-TweetFetcher.prototype.initializeTimer = function() {
+TweetFetcher.prototype.initializeTweetsTimer = function() {
   var that = this;
 
   setInterval(function() {
     that.fetchAll(function(tweets) {
       that.onNewTweets(tweets);
+    });
+  }, 10000);
+};
+
+TweetFetcher.prototype.initializeMentionsTimer = function() {
+  var that = this;
+
+  setInterval(function() {
+    that.fetchAllMentions(function(tweets) {
+      that.onNewMentions(tweets);
     });
   }, 10000);
 };
@@ -126,8 +136,13 @@ TweetFetcher.prototype.fetchAll = function(cb) {
 };
 
 TweetFetcher.prototype.notifyOnNewTweets = function(cb) {
-  this.initializeTimer();
+  this.initializeTweetsTimer();
   this.onNewTweets = cb;
+};
+
+TweetFetcher.prototype.notifyOnNewMentions = function(cb) {
+  this.initializeMentionsTimer();
+  this.onNewMentions = cb;
 };
 
 var xml_special_to_escaped_one_map = {

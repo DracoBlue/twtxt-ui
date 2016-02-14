@@ -286,13 +286,13 @@ module.exports = TweetsApp = React.createClass({
 
   // Render the component
   render: function(){
-    // <Loader paging={this.state.paging}/>
+    // <Loader paging={this.state.paging} />
     return (
       <div className={"tweets-app show-" + this.state.tab}>
         <Tweets tweets={this.state.tweets} />
         <Mentions tweets={this.state.mentions} />
-        <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets}/>
-        <Footer tab={this.state.tab} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab}/>
+        <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets} />
+        <Footer tab={this.state.tab} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} />
       </div>
     )
 
