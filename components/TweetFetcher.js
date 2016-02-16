@@ -20,6 +20,7 @@ TweetFetcher.prototype.login = function(url) {
 };
 
 TweetFetcher.prototype.follow = function(nickname, url) {
+  var that = this;
   var following = [];
 
   store.get('following').forEach(function(user) {

@@ -129,7 +129,7 @@ module.exports = TweetsApp = React.createClass({
     });
 
     // Set application state (active tweets + reset unread count)
-    this.setState({tweets: updated, count: 0});
+    this.setState({tweets: updated, tab: 'timeline', count: 0});
 
   },
 
