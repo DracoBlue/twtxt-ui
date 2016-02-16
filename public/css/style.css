@@ -276,6 +276,29 @@ footer.show-following .tab.following {
     text-decoration: none;
 }
 
+.follow-form.tweet.active {
+    padding: 1em;
+    text-align: right;
+    max-height: 150px;
+}
+
+.follow-form legend {
+    text-align: left;
+    padding-bottom: 0.5em;
+}
+
+.follow-form .text-field {
+    width: 100%;
+    padding: 0.5em;
+    text-align: left;
+    margin-bottom: 0.5em;
+}
+
+.follow-form .button {
+    padding: 0.5em;
+    margin: 0.5em;
+}
+
 @media (max-width: 650px)
 {
     footer span.update-message

@@ -237,6 +237,8 @@ module.exports = TweetsApp = React.createClass({
     /* FIXME: this is available for alpha testers */
     window.fetcher = fetcher;
 
+    this.fetcher = fetcher;
+
     fetcher.fetchAll(function(tweets) {
       var updated = that.state.tweets;
 
@@ -323,6 +325,14 @@ module.exports = TweetsApp = React.createClass({
 
   },
 
+  followUser: function(nickname, url) {
+    this.fetcher.follow(nickname, url);
+  },
+
+  unfollowUser: function(url) {
+    this.fetcher.unfollow(url);
+  },
+
   // Render the component
   render: function(){
     // <Loader paging={this.state.paging} />
@@ -330,7 +340,7 @@ module.exports = TweetsApp = React.createClass({
       <div className={"tweets-app show-" + this.state.tab}>
         <Tweets tweets={this.state.tweets} />
         <Mentions tweets={this.state.mentions} />
-        <Following following={this.state.following} />
+        <Following following={this.state.following} onFollowUser={this.followUser}  onUnfollowUser={this.unfollowUser} />
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets} />
         <Footer tab={this.state.tab} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} />
       </div>

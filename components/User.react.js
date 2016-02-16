@@ -3,6 +3,12 @@
 var React = require('react');
 
 module.exports = User = React.createClass({
+  unfollowUser: function(e) {
+    e.preventDefault();
+
+    this.props.onUnfollowUser(this.props.user.url);
+  },
+
   render: function(){
     var user = this.props.user;
   // FIXME: add the time here?
@@ -14,7 +20,7 @@ module.exports = User = React.createClass({
             <span className="screen-name">{user.displayTime}</span>
           </cite>
           <span className="content">
-          {user.url} <a href="#top" className="button unfollow" onClick={user.unfollow}>unfollow</a>
+          {user.url} <a href="#top" className="button unfollow" onClick={this.unfollowUser}>unfollow</a>
             </span>
         </blockquote>
       </li>
