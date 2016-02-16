@@ -12,6 +12,7 @@
   "dependencies": {
     "express": "~4.9.7",
     "express-handlebars": "~1.1.0",
+    "html5-desktop-notifications": "^1.0.0",
     "md5": "^2.0.0",
     "memcached": "^2.2.1",
     "moment": "^2.11.2",

@@ -3,6 +3,7 @@
 var React = require('react');
 
 module.exports = Footer = React.createClass({
+
   render: function(){
     return (
       <footer className={"show-" + this.props.tab}>
@@ -11,7 +12,7 @@ module.exports = Footer = React.createClass({
             <a href="#top" className="tab following" onClick={this.props.onFollowingTab}>Following ({this.props.following.length})</a>
 
         <br/>
-        Copyright 2016 by <a className="external-link" href="https://dracoblue.net">DracoBlue</a> (<a className="external-link" href="https://github.com/DracoBlue/twtxt-ui">source</a>)
+        Notifications: <a href="#top" onClick={this.props.onNotificationsToggle}>{this.props.notificationsActivated}</a> | Copyright 2016 by <a className="external-link" href="https://dracoblue.net">DracoBlue</a> (<a className="external-link" href="https://github.com/DracoBlue/twtxt-ui">source</a>)
       </footer>
     )
   }

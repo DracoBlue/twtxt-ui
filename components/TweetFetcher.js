@@ -233,6 +233,8 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
           }
         }
 
+        var text = body.replace(/(<[^>]+>)/g, '');
+
         body = body.replace(/ (http|https)(:\/\/[^\s<>"']+)/g, ' <a href="$1$2" class="external-link">$1$2</a>');
 
         tweets.push({
@@ -241,7 +243,8 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
           displayTime: moment(match[1]).format('YYYY/MM/DD HH:mm'),
           author: nickname,
           author_url: url,
-          body: body
+          body: body,
+          text: text
         });
       }
     }

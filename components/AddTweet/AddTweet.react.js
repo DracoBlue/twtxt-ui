@@ -1,7 +1,6 @@
 /** @jsx React.DOM */
 
 var React = require('react');
-var UrlInput = require('./UrlInput.react.js');
 
 module.exports = AddTweet = React.createClass({
 

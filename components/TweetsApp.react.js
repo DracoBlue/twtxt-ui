@@ -8,6 +8,9 @@ var Footer = require('./Footer.react.js');
 var Loader = require('./Loader.react.js');
 var NotificationBar = require('./NotificationBar.react.js');
 var TweetFetcher = require('./TweetFetcher.js');
+/* FIXME: hack, so we can use the notify lib with browserify! */
+global.window = global;
+var notify = require('html5-desktop-notifications');
 
 // Export the TweetsApp component
 module.exports = TweetsApp = React.createClass({
@@ -28,6 +31,10 @@ module.exports = TweetsApp = React.createClass({
 
     if (!isNew) {
       return ;
+    }
+
+    if (isNew && this.state.notificationsActivated == "ON") {
+      window.notify.createNotification("@" + tweet.author + " says", {body: tweet.text, "icon": "/favicon.ico"});
     }
 
   // Increment the unread count
@@ -201,11 +208,13 @@ module.exports = TweetsApp = React.createClass({
 
   // Set the initial component state
   getInitialState: function(props){
+    var notify = window.notify;
 
     props = props || this.props;
 
     // Set initial application state using props
     return {
+      notificationsActivated: (notify.permissionLevel() != notify.PERMISSION_GRANTED) ? "OFF" : "ON",
       tweets: props.tweets || [],
       mentions: props.mentions || [],
       following: props.following || [],
@@ -333,6 +342,26 @@ module.exports = TweetsApp = React.createClass({
     this.fetcher.unfollow(url);
   },
 
+  onNotificationsToggle: function(e) {
+    var notify = window.notify;
+
+    e.preventDefault();
+
+    if (this.state.notificationsActivated == "OFF") {
+      if (notify.permissionLevel() != notify.PERMISSION_GRANTED) {
+        notify.requestPermission();
+      }
+
+      if (notify.permissionLevel() != notify.PERMISSION_GRANTED) {
+        this.setState({notificationsActivated: "OFF"});
+      } else {
+        this.setState({notificationsActivated: "ON"});
+      }
+    } else {
+      this.setState({notificationsActivated: "OFF"});
+    }
+  },
+
   // Render the component
   render: function(){
     // <Loader paging={this.state.paging} />
@@ -342,7 +371,7 @@ module.exports = TweetsApp = React.createClass({
         <Mentions tweets={this.state.mentions} />
         <Following following={this.state.following} onFollowUser={this.followUser}  onUnfollowUser={this.unfollowUser} />
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets} />
-        <Footer tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} />
+        <Footer onNotificationsToggle={this.onNotificationsToggle} notificationsActivated={this.state.notificationsActivated} tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} />
       </div>
     )
 
