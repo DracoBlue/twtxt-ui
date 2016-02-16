@@ -342,7 +342,7 @@ module.exports = TweetsApp = React.createClass({
         <Mentions tweets={this.state.mentions} />
         <Following following={this.state.following} onFollowUser={this.followUser}  onUnfollowUser={this.unfollowUser} />
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets} />
-        <Footer tab={this.state.tab} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} />
+        <Footer tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} />
       </div>
     )
 
