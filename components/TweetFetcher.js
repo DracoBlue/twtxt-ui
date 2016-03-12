@@ -250,6 +250,16 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
     }
   });
 
+  tweets.sort(function(a, b) {
+    if (a.timestamp.unix() == b.timestamp.unix()) {
+      return 0;
+    }
+    return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
+  });
+
+  /* limit to the latest 20 entries */
+  tweets = tweets.slice(0, 20);
+
   return tweets;
 };
 
