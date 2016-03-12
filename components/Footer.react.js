@@ -12,7 +12,7 @@ module.exports = Footer = React.createClass({
             <a href="#top" className="tab following" onClick={this.props.onFollowingTab}>Following ({this.props.following.length})</a>
 
         <br/>
-        Notifications: <a href="#top" onClick={this.props.onNotificationsToggle}>{this.props.notificationsActivated}</a> | Copyright 2016 by <a className="external-link" href="https://dracoblue.net">DracoBlue</a> (<a className="external-link" href="https://github.com/DracoBlue/twtxt-ui">source</a>)
+        <span className={"notifications-toggle is-" + this.props.notificationsActivated}>Notifications: <a href="#top" onClick={this.props.onNotificationsToggle}>{this.props.notificationsActivated}</a> | </span> Copyright 2016 by <a className="external-link" href="https://dracoblue.net">DracoBlue</a> (<a className="external-link" href="https://github.com/DracoBlue/twtxt-ui">source</a>)
       </footer>
     )
   }

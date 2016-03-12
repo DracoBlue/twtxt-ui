@@ -299,6 +299,10 @@ footer.show-following .tab.following {
     margin: 0.5em;
 }
 
+.notifications-toggle.is-NA {
+    display: none;
+}
+
 @media (max-width: 650px)
 {
     footer span.update-message

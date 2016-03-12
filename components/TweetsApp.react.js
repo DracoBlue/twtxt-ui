@@ -212,9 +212,15 @@ module.exports = TweetsApp = React.createClass({
 
     props = props || this.props;
 
+    var notificationsActivated = (notify.permissionLevel() != notify.PERMISSION_GRANTED) ? "OFF" : "ON";
+
+    if (!notify.isSupported) {
+      notificationsActivated = "NA";
+    }
+
     // Set initial application state using props
     return {
-      notificationsActivated: (notify.permissionLevel() != notify.PERMISSION_GRANTED) ? "OFF" : "ON",
+      notificationsActivated: notificationsActivated,
       tweets: props.tweets || [],
       mentions: props.mentions || [],
       following: props.following || [],
