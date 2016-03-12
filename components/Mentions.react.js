@@ -11,7 +11,7 @@ module.exports = Mentions = React.createClass({
     // Build list items of single tweet components using map
     var content = this.props.tweets.map(function(tweet){
       return (
-        <Tweet key={tweet.id} tweet={tweet} />
+        <Tweet key={"mention-" + tweet.id} tweet={tweet} />
       )
     });
 

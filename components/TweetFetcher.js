@@ -95,12 +95,10 @@ TweetFetcher.prototype.fetchAllMentions = function(cb) {
     }).on('end', function() {
       body = body.join("");
 
-      console.log(body);
       that.parseRawMentions(body).forEach(function(tweet) {
         tweets.push(tweet);
       });
-
-
+      
       cb(tweets);
     });
 
@@ -292,15 +290,18 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
           }
         }
 
+        var text = body.replace(/(<[^>]+>)/g, '');
+
         body = body.replace(/ (http|https)(:\/\/[^\s<>"']+)/g, ' <a href="$1$2" class="external-link">$1$2</a>');
 
         tweets.push({
-          id: md5(author.url + "\t" + row),
+          id: md5(row),
           timestamp: moment(match[2]),
           displayTime: moment(match[2]).format('YYYY/MM/DD HH:mm'),
           author: author.nickname,
           author_url: author.url,
-          body: body
+          body: body,
+          text: text
         });
       }
     }
