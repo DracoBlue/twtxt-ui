@@ -5,7 +5,8 @@ var JSX = require('node-jsx').install(),
   md5 = require('md5'),
   https = require('https'),
   http = require('http'),
-  Memcached = require('memcached');
+  Memcached = require('memcached'),
+  ReactDOMServer = require('react-dom/server');
 
 
 var cache = new Memcached((process.env.MEMCACHED_HOST || "localhost") + ":" + (process.env.MEMCACHED_PORT || "11211"))
@@ -13,7 +14,7 @@ var cache = new Memcached((process.env.MEMCACHED_HOST || "localhost") + ":" + (p
 module.exports = {
 
   index: function(req, res) {
-    var markup = React.renderToString(
+    var markup = ReactDOMServer.renderToString(
       TweetsApp({
         tweets: [],
         mentions: []
