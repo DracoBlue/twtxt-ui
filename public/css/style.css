@@ -159,6 +159,12 @@ footer.show-following .tab.following {
     padding: 0 20px;
 }
 
+.tweet .external-link,
+.tweet .username,
+.tweet .text {
+    margin-right: 0.25em;
+}
+
 .tweet
 {
     position: relative;

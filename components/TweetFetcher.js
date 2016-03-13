@@ -98,7 +98,7 @@ TweetFetcher.prototype.fetchAllMentions = function(cb) {
       that.parseRawMentions(body).forEach(function(tweet) {
         tweets.push(tweet);
       });
-      
+
       cb(tweets);
     });
 
@@ -216,24 +216,9 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
       if (match && moment(match[1]).isValid()) {
 
         var body = match[2].trim();
-
-        if (body) {
-          var currentMatch = body.match(/@<([^ ]+) ([^> ]+)>/);
-          while (currentMatch) {
-            body = body.replace(currentMatch[0], '<a href="' + that.encodeXml(currentMatch[2]) + '" class="username">@' + that.encodeXml(currentMatch[1]) + '</a>');
-            currentMatch = body.match(/@<([^ ]+) ([^> ]+)>/);
-          }
-
-          currentMatch = body.match(/@<([^> ]+)>/);
-          while (currentMatch) {
-            body = body.replace(currentMatch[0], '<a href="' + that.encodeXml(currentMatch[1]) + '" class="username">@' + that.encodeXml(urlUtils.parse(currentMatch[1])['hostname'] || currentMatch[1]) + '</a>');
-            currentMatch = body.match(/@<([^> ]+)>/);
-          }
-        }
+        var rawText = body;
 
         var text = body.replace(/(<[^>]+>)/g, '');
-
-        body = body.replace(/ (http|https)(:\/\/[^\s<>"']+)/g, ' <a href="$1$2" class="external-link">$1$2</a>');
 
         tweets.push({
           id: md5(url + "\t" + row),
@@ -241,8 +226,8 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
           displayTime: moment(match[1]).format('YYYY/MM/DD HH:mm'),
           author: nickname,
           author_url: url,
-          body: body,
-          text: text
+          text: text,
+          rawText: rawText
         });
       }
     }
@@ -275,24 +260,9 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
         var author = that.extractAuthor(match[1]);
 
         var body = match[3].trim();
-
-        if (body) {
-          var currentMatch = body.match(/@<([^ ]+) ([^> ]+)>/);
-          while (currentMatch) {
-            body = body.replace(currentMatch[0], '<a href="' + that.encodeXml(currentMatch[2]) + '" class="username">@' + that.encodeXml(currentMatch[1]) + '</a>');
-            currentMatch = body.match(/@<([^ ]+) ([^> ]+)>/);
-          }
-
-          currentMatch = body.match(/@<([^> ]+)>/);
-          while (currentMatch) {
-            body = body.replace(currentMatch[0], '<a href="' + that.encodeXml(currentMatch[1]) + '" class="username">@' + that.encodeXml(urlUtils.parse(currentMatch[1])['hostname'] || currentMatch[1]) + '</a>');
-            currentMatch = body.match(/@<([^> ]+)>/);
-          }
-        }
+        var rawText = body;
 
         var text = body.replace(/(<[^>]+>)/g, '');
-
-        body = body.replace(/ (http|https)(:\/\/[^\s<>"']+)/g, ' <a href="$1$2" class="external-link">$1$2</a>');
 
         tweets.push({
           id: md5(row),
@@ -300,8 +270,8 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
           displayTime: moment(match[2]).format('YYYY/MM/DD HH:mm'),
           author: author.nickname,
           author_url: author.url,
-          body: body,
-          text: text
+          text: text,
+          rawText: rawText
         });
       }
     }
