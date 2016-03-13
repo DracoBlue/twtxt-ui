@@ -13,6 +13,12 @@ module.exports = Tweet = React.createClass({
     var getPartsOfTweetByRawText = function(body) {
       var text = body.trim();
       var parts = [];
+
+      if (text.substr(0, 4) == "/me ") {
+        parts.push({"text": tweet.author, type: "me"});
+        text = text.substr(4);
+      }
+
       while (text.length > 0 || maxCount == 0)
       {
         var isMatch = false;
@@ -67,6 +73,11 @@ module.exports = Tweet = React.createClass({
     var parts = getPartsOfTweetByRawText(tweet.rawText);
 
     var content = parts.map(function(part){
+      if (part.type == "me") {
+        return (
+          <span className="me">{part.text}</span>
+        )
+      }
       if (part.type == "url") {
         return (
           <a href={part.url} className="external-link">{part.url}</a>
