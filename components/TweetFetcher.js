@@ -250,6 +250,8 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
   var that = this;
   var tweets = [];
 
+  var idsInUse = {};
+
   rawTweets.split("\n").forEach(function(row) {
     row = (row || "").trim();
 
@@ -264,8 +266,16 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
 
         var text = body.replace(/(<[^>]+>)/g, '');
 
+        var id = md5(row);
+
+        if (idsInUse[id]) {
+          return ;
+        }
+
+        idsInUse[id] = true;
+
         tweets.push({
-          id: md5(row),
+          id: id,
           timestamp: moment(match[2]),
           displayTime: moment(match[2]).format('YYYY/MM/DD HH:mm'),
           author: author.nickname,
