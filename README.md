@@ -25,44 +25,20 @@ Screenshot:
 5. Start the app: `node server.js`
 6. View in browser at: `http://localhost:8080`
 
+## Features
+
+* Web-Client
+* Follow/Unfollow people
+* Login with a specific twtxt-Url
+* Show `@mentions` of that twtxt-Url
+* Browser-Notifications on new Mentions/Tweets
+* Stored in LocalStorage
+* **Missing**: Posting new Twtxt-Messages. Please use the official cli client at <https://github.com/buckket/twtxt> for this (so far)
+
 ## Usage
 
-So far there is no fancy UI to add new users. So you have to open the JS-Console in your browser and type.
-This information will be visible after page refresh, because the
-information is stored in the localStorage of your browser.
-
-### Login
-
-This
-
-``` javascript
-fetcher.login('https://dracoblue.net/twtxt.txt');
-```
-
-will load the mentions tab with your information.
-
-
-### Follow/Unfollow
-
-``` javascript
-fetcher.follow('dracoblue', 'https://dracoblue.net/twtxt.txt');
-```
-
-This will add all posts by this user to your timeline.
-
-Use
-
-``` javascript
-fetcher.unfollow('dracoblue')
-```
-
-or
-
-``` javascript
-fetcher.follow('https://dracoblue.net/twtxt.txt');
-```
-
-to unfollow an account. No new updates will be visible in your timeline.
+You can "login" with your twtxt-Url (no password required). This information will be visible after page refresh,
+because the information is stored in the localStorage of your browser.
 
 ## Contributions
 
