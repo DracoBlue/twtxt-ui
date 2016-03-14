@@ -8,6 +8,7 @@ module.exports = Tweet = React.createClass({
     var tweet = this.props.tweet;
 
     var maxCount = 100;
+    var isMe = false;
 
     /* FIXME: get this method out of this js file */
     var getPartsOfTweetByRawText = function(body) {
@@ -17,6 +18,7 @@ module.exports = Tweet = React.createClass({
       if (text.substr(0, 4) == "/me ") {
         parts.push({"text": tweet.author, type: "me"});
         text = text.substr(4);
+        isMe = true;
       }
 
       while (text.length > 0 || maxCount == 0)
@@ -93,7 +95,6 @@ module.exports = Tweet = React.createClass({
       )
     });
 
-    // FIXME: add the time here?
     return (
       <li className={"tweet" + (tweet.active ? ' active' : '')}>
         <img src={tweet.avatar} className="avatar"/>
@@ -102,7 +103,7 @@ module.exports = Tweet = React.createClass({
             <a href={tweet.author_url}>{tweet.author}</a>
             <span className="screen-name">{tweet.displayTime}</span>
           </cite>
-          <span className="content">{content}</span>
+          <span className={"content"  + (isMe ? ' me' : '')}>{content}</span>
         </blockquote>
       </li>
     )

@@ -166,7 +166,7 @@ footer.show-following .tab.following {
     margin-right: 0.25em;
 }
 
-.tweet .me {
+.tweet .content.me {
     font-style: italic;
 }
 
