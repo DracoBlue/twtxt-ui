@@ -291,8 +291,6 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
 };
 
 TweetFetcher.prototype.extractAuthor = function(string) {
-    console.log('author', string);
-
   var currentMatch = string.match(/@<([^ ]+) ([^> ]+)>/);
   if (currentMatch) {
     return {
