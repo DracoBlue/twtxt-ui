@@ -6,13 +6,6 @@ var http = require('http');
 
 var TweetFetcher = function() {
 
-  if (!store.get('following')) {
-    store.set('following', [
-      {"url": 'https://buckket.org/twtxt_news.txt', "nickname": "twtxt_news"},
-      {"url": 'https://buckket.org/twtxt.txt', "nickname": "buckket"},
-      {"url": 'https://dracoblue.net/twtxt.txt', "nickname": "dracoblue"}
-    ]);
-  }
 };
 
 TweetFetcher.prototype.login = function(url) {

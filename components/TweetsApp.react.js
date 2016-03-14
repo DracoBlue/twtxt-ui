@@ -6,7 +6,9 @@ var Mentions = require('./Mentions.react.js');
 var Following = require('./Following.react.js');
 var Footer = require('./Footer.react.js');
 var Loader = require('./Loader.react.js');
+var Config = require('./Config.react.js');
 var NotificationBar = require('./NotificationBar.react.js');
+var store = require('store');
 var TweetFetcher = require('./TweetFetcher.js');
 /* FIXME: hack, so we can use the notify lib with browserify! */
 global.window = global;
@@ -152,6 +154,10 @@ module.exports = TweetsApp = React.createClass({
     this.setState({tab: "following"});
   },
 
+  showConfigTab: function(){
+    this.setState({tab: "config"});
+  },
+
   // Method to load tweets fetched from the server
   loadPagedTweets: function(tweets){
 
@@ -218,13 +224,21 @@ module.exports = TweetsApp = React.createClass({
       notificationsActivated = "NA";
     }
 
+    if (!store.get('following')) {
+      store.set('following', [
+        {"url": 'https://buckket.org/twtxt_news.txt', "nickname": "twtxt_news"},
+        {"url": 'https://buckket.org/twtxt.txt', "nickname": "buckket"},
+        {"url": 'https://dracoblue.net/twtxt.txt', "nickname": "dracoblue"}
+      ]);
+    }
+
     // Set initial application state using props
     return {
       notificationsActivated: notificationsActivated,
       tweets: props.tweets || [],
       mentions: props.mentions || [],
       following: props.following || [],
-      tab: 'timeline',
+      tab: 'config',
       count: 0,
       mentions_count: 0,
       page: 0,
@@ -348,6 +362,11 @@ module.exports = TweetsApp = React.createClass({
     this.fetcher.unfollow(url);
   },
 
+  changeLogin: function(url) {
+    this.fetcher.login(url);
+    this.showFollowingTab();
+  },
+
   onNotificationsToggle: function(e) {
     var notify = window.notify;
 
@@ -376,8 +395,9 @@ module.exports = TweetsApp = React.createClass({
         <Tweets tweets={this.state.tweets} />
         <Mentions tweets={this.state.mentions} />
         <Following following={this.state.following} onFollowUser={this.followUser}  onUnfollowUser={this.unfollowUser} />
+        <Config onChangeLogin={this.changeLogin} />
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets} />
-        <Footer onNotificationsToggle={this.onNotificationsToggle} notificationsActivated={this.state.notificationsActivated} tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} />
+        <Footer onNotificationsToggle={this.onNotificationsToggle} notificationsActivated={this.state.notificationsActivated} tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} onConfigTab ={this.showConfigTab} />
       </div>
     )
 
