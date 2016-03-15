@@ -8,6 +8,7 @@ var Footer = require('./Footer.react.js');
 var Loader = require('./Loader.react.js');
 var Config = require('./Config.react.js');
 var NotificationBar = require('./NotificationBar.react.js');
+var urlUtils = require('url');
 var store = require('store');
 var TweetFetcher = require('./TweetFetcher.js');
 /* FIXME: hack, so we can use the notify lib with browserify! */
@@ -235,9 +236,9 @@ module.exports = TweetsApp = React.createClass({
     // Set initial application state using props
     return {
       notificationsActivated: notificationsActivated,
-      tweets: props.tweets || [],
-      mentions: props.mentions || [],
-      following: props.following || [],
+      tweets: [],
+      mentions: [],
+      following: [],
       enableGithub: props.enableGithub || false,
       tab: 'config',
       count: 0,
@@ -349,6 +350,12 @@ module.exports = TweetsApp = React.createClass({
         that.setState({following: users});
       });
     });
+
+
+    if (document.location.toString().indexOf('#') != -1) {
+      var urlParts = urlUtils.parse(document.location.toString());
+      console.log('parts', urlParts);
+    }
 
     // Attach scroll event to the window for infinity paging
     window.addEventListener('scroll', this.checkWindowScroll);
