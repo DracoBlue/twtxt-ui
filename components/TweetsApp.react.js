@@ -238,6 +238,7 @@ module.exports = TweetsApp = React.createClass({
       tweets: props.tweets || [],
       mentions: props.mentions || [],
       following: props.following || [],
+      enableGithub: props.enableGithub || false,
       tab: 'config',
       count: 0,
       mentions_count: 0,
@@ -395,7 +396,7 @@ module.exports = TweetsApp = React.createClass({
         <Tweets tweets={this.state.tweets} />
         <Mentions tweets={this.state.mentions} />
         <Following following={this.state.following} onFollowUser={this.followUser}  onUnfollowUser={this.unfollowUser} />
-        <Config onChangeLogin={this.changeLogin} />
+        <Config onChangeLogin={this.changeLogin} enableGithub={this.state.enableGithub} />
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets} />
         <Footer onNotificationsToggle={this.onNotificationsToggle} notificationsActivated={this.state.notificationsActivated} tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} onConfigTab ={this.showConfigTab} />
       </div>

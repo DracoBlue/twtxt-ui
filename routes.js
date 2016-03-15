@@ -16,6 +16,7 @@ module.exports = {
   index: function(req, res) {
     var markup = ReactDOMServer.renderToString(
       TweetsApp({
+        enableGithub: process.env.GITHUB_CLIENT_ID ? true : false,
         tweets: [],
         mentions: []
       })
@@ -24,7 +25,8 @@ module.exports = {
     // Render our 'home' template
     res.render('home', {
       markup: markup, // Pass rendered react markup
-      state: JSON.stringify([]) // Pass current state to client side
+      state: JSON.stringify({
+      }) // Pass current state to client side
     });
   },
 

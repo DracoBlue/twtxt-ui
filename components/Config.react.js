@@ -12,14 +12,21 @@ module.exports = Config = React.createClass({
   render: function(){
     var that = this;
 
-    // Return ul filled with our mapped tweets
-    return (
-      <ul className="config tweets users">
-        <Login onChangeLogin={this.props.onChangeLogin}/>
-        <GithubLogin/>
-      </ul>
-    )
+    if (this.props.enableGithub) {
+      return (
+        <ul className="config tweets users">
+          <Login onChangeLogin={this.props.onChangeLogin}/>
+          <GithubLogin/>
+        </ul>
+      )
 
+    } else {
+      return (
+        <ul className="config tweets users">
+          <Login onChangeLogin={this.props.onChangeLogin}/>
+        </ul>
+      )
+    }
   }
 
 }); 
