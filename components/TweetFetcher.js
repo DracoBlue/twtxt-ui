@@ -8,8 +8,11 @@ var TweetFetcher = function() {
 
 };
 
-TweetFetcher.prototype.login = function(url) {
+TweetFetcher.prototype.login = function(url, nick) {
   store.set('url', url);
+  if (nick) {
+    store.set('nick', nick);
+  }
 };
 
 TweetFetcher.prototype.follow = function(nickname, url) {
