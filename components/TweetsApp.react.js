@@ -9,8 +9,10 @@ var Loader = require('./Loader.react.js');
 var Config = require('./Config.react.js');
 var NotificationBar = require('./NotificationBar.react.js');
 var urlUtils = require('url');
+var querystring = require('querystring');
 var store = require('store');
 var TweetFetcher = require('./TweetFetcher.js');
+var GithubStore = require('./GithubStore.js');
 /* FIXME: hack, so we can use the notify lib with browserify! */
 global.window = global;
 var notify = require('html5-desktop-notifications');
@@ -352,9 +354,24 @@ module.exports = TweetsApp = React.createClass({
     });
 
 
-    if (document.location.toString().indexOf('#') != -1) {
-      var urlParts = urlUtils.parse(document.location.toString());
-      console.log('parts', urlParts);
+    if (document.location.toString().indexOf('#?') != -1) {
+      var queryStringParts = querystring.parse(document.location.toString().substr(document.location.toString().indexOf('#?') + 2));
+      if (queryStringParts.githubLogin && queryStringParts.githubAccessToken) {
+        var githubStore = new GithubStore(queryStringParts.githubAccessToken, queryStringParts.githubLogin.toLowerCase());
+
+        githubStore.getMetaData(function(err, metaData) {
+          console.log('contents!', metaData);
+          that.store = githubStore;
+          that.setState({canPost: true});
+          if (metaData.twtxtUrl) {
+            that.fetcher.login(metaData.twtxtUrl, metaData.nick);
+          } else {
+            that.fetcher.login("https://" + queryStringParts.githubLogin.toLowerCase() + '.github.io/twtxt.txt', queryStringParts.githubLogin.toLowerCase());
+          }
+          that.showTimelineTab();
+        });
+      }
+      document.location.hash = "#top";
     }
 
     // Attach scroll event to the window for infinity paging
@@ -364,6 +381,13 @@ module.exports = TweetsApp = React.createClass({
 
   followUser: function(nickname, url) {
     this.fetcher.follow(nickname, url);
+  },
+
+  postMessage: function(text) {
+    var that = this;
+    this.store.postMessage(text, function(err) {
+      that.showTimelineTab();
+    });
   },
 
   unfollowUser: function(url) {
@@ -400,7 +424,7 @@ module.exports = TweetsApp = React.createClass({
     // <Loader paging={this.state.paging} />
     return (
       <div className={"tweets-app show-" + this.state.tab}>
-        <Tweets tweets={this.state.tweets} />
+        <Tweets tweets={this.state.tweets} canPost={this.state.canPost} onPostMessage={this.postMessage} />
         <Mentions tweets={this.state.mentions} />
         <Following following={this.state.following} onFollowUser={this.followUser}  onUnfollowUser={this.unfollowUser} />
         <Config onChangeLogin={this.changeLogin} enableGithub={this.state.enableGithub} />

@@ -2,6 +2,7 @@
 
 var React = require('react');
 var Tweet = require('./Tweet.react.js');
+var ComposeTweet = require('./ComposeTweet.react.js');
 
 module.exports = Tweets = React.createClass({
 
@@ -14,6 +15,10 @@ module.exports = Tweets = React.createClass({
         <Tweet key={"tweet-" + tweet.id} tweet={tweet} />
       )
     });
+
+    if (this.props.canPost) {
+      content.unshift((<ComposeTweet onPostMessage={this.props.onPostMessage}/>));
+    }
 
     // Return ul filled with our mapped tweets
     return (
