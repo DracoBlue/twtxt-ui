@@ -35,6 +35,20 @@ Screenshot:
 * Stored in LocalStorage
 * **Missing**: Posting new Twtxt-Messages. Please use the official cli client at <https://github.com/buckket/twtxt> for this (so far)
 
+## Github Integration
+
+If you want to allow login with github and storage of twtxt.txt at https://username.github.io/twtxt.txt, you need to
+register an application at <https://github.com/settings/applications/new> and export the credentials in the following
+way:
+
+``` console
+$ export GITHUB_CLIENT_ID=1234212321312312321
+$ export GITHUB_CLIENT_SECRET=56a4d6e4ad654da76e4d65ea4d6ae4d6ea4d5e76
+$ export GITHUB_REDIRECT_URI=http://your-twtxt-ui-host/callback/github
+```
+
+The `GITHUB_REDIRECT_URI` needs to be the applications address suffixed with `/callback/github`.
+
 ## Usage
 
 You can "login" with your twtxt-Url (no password required). This information will be visible after page refresh,
