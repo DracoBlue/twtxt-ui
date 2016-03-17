@@ -9,7 +9,7 @@ var GithubStore = function(token, login) {
 GithubStore.prototype.fetchTwtxtTxt = function(cb) {
   var that = this;
 
-  http.get("http://api.github.com/repos/" + encodeURIComponent(this.login) + "/" + encodeURIComponent(this.login) + ".github.io/contents/twtxt.txt?access_token=" + encodeURIComponent(that.token), function(res) {
+  http.get("https://api.github.com/repos/" + encodeURIComponent(that.login) + "/" + encodeURIComponent(that.login) + ".github.io/contents/twtxt.txt?access_token=" + encodeURIComponent(that.token), function(res) {
 
     var body = [];
     res.on('data', function(chunk) {
@@ -55,12 +55,17 @@ GithubStore.prototype.getMetaData = function(cb) {
   });
 };
 
+GithubStore.prototype.followUser = function(nickname, url, cb) {
+  var that = this;
+
+  this.postMessage("/follow " + nickname + " " + url, cb);
+};
 
 GithubStore.prototype.postMessage = function(text, cb) {
   var that = this;
 
   this.fetchTwtxtTxt(function(err, currentContent, currentBody) {
-    var options = url.parse("http://api.github.com/repos/" + encodeURIComponent(this.login) + "/" + encodeURIComponent(this.login) + ".github.io/contents/twtxt.txt?access_token=" + encodeURIComponent(that.token));
+    var options = url.parse("https://api.github.com/repos/" + encodeURIComponent(that.login) + "/" + encodeURIComponent(that.login) + ".github.io/contents/twtxt.txt?access_token=" + encodeURIComponent(that.token));
     options.method = "PUT";
     var request = http.request(options, function(res) {
 

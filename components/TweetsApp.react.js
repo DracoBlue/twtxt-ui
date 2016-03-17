@@ -381,6 +381,11 @@ module.exports = TweetsApp = React.createClass({
 
   followUser: function(nickname, url) {
     this.fetcher.follow(nickname, url);
+
+    if (this.store) {
+      this.store.followUser(nickname, url, function(err) {
+      });
+    }
   },
 
   postMessage: function(text) {
