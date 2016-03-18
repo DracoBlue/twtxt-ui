@@ -276,86 +276,63 @@ module.exports = TweetsApp = React.createClass({
 
     this.fetcher = fetcher;
 
-    fetcher.fetchAll(function(tweets) {
-      var updated = that.state.tweets;
+    var initializeFetcher = function() {
+      fetcher.fetchAll(function(tweets) {
+        var updated = that.state.tweets;
 
-      tweets.forEach(function(tweet) {
-        tweet.active = true;
-        updated.push(tweet);
-      });
-
-      updated.sort(function(a, b) {
-        if (a.timestamp.unix() == b.timestamp.unix()) {
-          return 0;
-        }
-        return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
-      });
-
-      that.setState({tweets: updated, count: 0});
-
-      fetcher.notifyOnNewTweets(function(tweets) {
         tweets.forEach(function(tweet) {
-          self.addTweet(tweet);
-        })
-      });
-    });
-
-    fetcher.fetchAllMentions(function(tweets) {
-      var updated = that.state.mentions;
-
-      tweets.forEach(function(tweet) {
-        tweet.active = true;
-        updated.push(tweet);
-      });
-
-      updated.sort(function(a, b) {
-        if (a.timestamp.unix() == b.timestamp.unix()) {
-          return 0;
-        }
-        return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
-      });
-
-      that.setState({mentions: updated, mentions_count: 0});
-
-      fetcher.notifyOnNewMentions(function(tweets) {
-        tweets.forEach(function(tweet) {
-          self.addMention(tweet);
-        })
-      });
-    });
-
-    fetcher.fetchAllFollowing(function(users) {
-      var updated = that.state.following;
-
-      users.forEach(function(user) {
-        user.active = true;
-        updated.push(user);
-      });
-
-      updated.sort(function(a, b) {
-        if (a.nick == b.nick) {
-          return 0;
-        }
-        return a.nick > b.nick ? -1 : 1;
-      });
-
-      that.setState({following: updated});
-
-      fetcher.notifyOnUpdatedFollowing(function(users) {
-        users.forEach(function(user) {
-          user.active = true;
+          tweet.active = true;
+          updated.push(tweet);
         });
 
-        users.sort(function(a, b) {
-          if (a.nick == b.nick) {
+        updated.sort(function(a, b) {
+          if (a.timestamp.unix() == b.timestamp.unix()) {
             return 0;
           }
-          return a.nick > b.nick ? -1 : 1;
+          return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
         });
 
-        that.setState({following: users});
+        that.setState({tweets: updated, count: 0});
+
+        fetcher.notifyOnNewTweets(function(tweets) {
+          tweets.forEach(function(tweet) {
+            self.addTweet(tweet);
+          })
+        });
       });
-    });
+
+      fetcher.fetchAllMentions(function(tweets) {
+        var updated = that.state.mentions;
+
+        tweets.forEach(function(tweet) {
+          tweet.active = true;
+          updated.push(tweet);
+        });
+
+        updated.sort(function(a, b) {
+          if (a.timestamp.unix() == b.timestamp.unix()) {
+            return 0;
+          }
+          return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
+        });
+
+        that.setState({mentions: updated, mentions_count: 0});
+
+        fetcher.notifyOnNewMentions(function(tweets) {
+          tweets.forEach(function(tweet) {
+            self.addMention(tweet);
+          })
+        });
+      });
+
+      fetcher.fetchAllFollowing(function(users) {
+        that.setState({following: users});
+
+        fetcher.notifyOnUpdatedFollowing(function(users) {
+          that.setState({following: users});
+        });
+      });
+    };
 
 
     if (document.location.toString().indexOf('#?') != -1) {
@@ -374,11 +351,16 @@ module.exports = TweetsApp = React.createClass({
           }
           that.showTimelineTab();
 
-          that.setState({following: metaData.following});
+          store.set('following', metaData.following);
 
+          initializeFetcher();
         });
+      } else {
+        initializeFetcher();
       }
       document.location.hash = "#top";
+    } else {
+      initializeFetcher();
     }
 
     // Attach scroll event to the window for infinity paging

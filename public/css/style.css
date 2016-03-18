@@ -82,10 +82,22 @@ footer.show-following .tab.following {
     color: #2c3e50;
 }
 
+footer.show-config .tab.following,
+footer.show-config .tab.timeline,
+footer.show-config .tab.logout,
+footer.show-config .tab.mentions{
+    display: none;
+}
+
+.tab.config {
+    display: none;
+}
+
 footer.show-config .tab.config {
     background-color: #ffffff;
     font-weight: bold;
     color: #2c3e50;
+    display: inline-block;
 }
 
 .loader

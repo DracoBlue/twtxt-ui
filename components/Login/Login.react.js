@@ -29,7 +29,7 @@ module.exports = Login = React.createClass({
     return (
       <li className="active tweet follow-form">
       <form onSubmit={this.handleSubmit}>
-        <legend>Login</legend>
+        <legend>(Read-Only) Login</legend>
         <input
           className="text-field"
           type="text"

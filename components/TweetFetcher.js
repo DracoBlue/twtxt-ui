@@ -28,6 +28,13 @@ TweetFetcher.prototype.follow = function(nick, url) {
     "url": url
   });
 
+  following.sort(function(a, b) {
+    if (a.nick == b.nick) {
+      return 0;
+    }
+    return a.nick > b.nick ? -1 : 1;
+  });
+
   store.set('following', following);
 
   if (this.onUpdatedFollowing) {
@@ -114,6 +121,13 @@ TweetFetcher.prototype.fetchAllFollowing = function(cb) {
       that.unfollow(user.url);
     };
     users.push(user);
+  });
+
+  users.sort(function(a, b) {
+    if (a.nick == b.nick) {
+      return 0;
+    }
+    return a.nick > b.nick ? -1 : 1;
   });
 
   cb(users);
