@@ -58,10 +58,8 @@ GithubStore.prototype.getMetaData = function(cb) {
         if (line.match(/^.+\t\/[^ ]+ /)) {
           var cmd = line.match(/^.+\t\/([^ ]+) /)[1];
           if (cmd) {
-            console.log("cmd", cmd);
             var firstParameterMatch = line.match(/^.+\t\/[^ ]+ ([^ ]+)/);
             if (firstParameterMatch) {
-              console.log("firstParameterMatch", firstParameterMatch);
               if (cmd == "follow"|| cmd == "unfollow") {
                 metaData["following"] = metaData["following"] || [];
                 if (cmd == "unfollow") {
@@ -70,7 +68,6 @@ GithubStore.prototype.getMetaData = function(cb) {
                 if (cmd == "follow") {
 
                   var secondParameterMatch = line.match(/^.+\t\/[^ ]+ [^ ]+ ([^ ]+)/);
-                  console.log("secondParameterMatch", secondParameterMatch);
                   if (secondParameterMatch) {
                     metaData["following"] = filterFollowerByNick(metaData["following"], firstParameterMatch[1]);
                     metaData["following"].push({
