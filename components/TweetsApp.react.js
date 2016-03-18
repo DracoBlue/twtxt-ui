@@ -218,10 +218,14 @@ module.exports = TweetsApp = React.createClass({
 
     props = props || this.props;
 
-    var notificationsActivated = (notify.permissionLevel() != notify.PERMISSION_GRANTED) ? "OFF" : "ON";
+    var notificationsActivated = "NA";
 
-    if (!notify.isSupported) {
-      notificationsActivated = "NA";
+    if (notify.isSupported) {
+      if (notify.permissionLevel() == notify.PERMISSION_GRANTED) {
+        notificationsActivated = store.get('notificationsActivated') ? "ON" : "OFF";
+      } else {
+        notificationsActivated = "OFF";
+      }
     }
 
     if (!store.get('following')) {
@@ -379,11 +383,14 @@ module.exports = TweetsApp = React.createClass({
 
       if (notify.permissionLevel() != notify.PERMISSION_GRANTED) {
         this.setState({notificationsActivated: "OFF"});
+        store.set('notificationsActivated', false);
       } else {
         this.setState({notificationsActivated: "ON"});
+        store.set('notificationsActivated', true);
       }
     } else {
       this.setState({notificationsActivated: "OFF"});
+      store.set('notificationsActivated', false);
     }
   },
 
