@@ -387,7 +387,7 @@ module.exports = TweetsApp = React.createClass({
       if (word.substr(0, 1) == "@") {
         var nick = word.substr(1).toLowerCase();
         if (followingNickToUrlMap.hasOwnProperty(nick)) {
-          textWithExpandedMentions.push("<@"+ nick + " " + followingNickToUrlMap[nick] + ">");
+          textWithExpandedMentions.push("@<"+ nick + " " + followingNickToUrlMap[nick] + ">");
           return ;
         }
       }
