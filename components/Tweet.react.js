@@ -21,6 +21,20 @@ module.exports = Tweet = React.createClass({
         isMe = true;
       }
 
+      if (text.substr(0, 8) == "/follow ") {
+        var commandParts = text.split(" ");
+        parts.push({"text": tweet.author, type: "me"});
+        isMe = true;
+        text = "is now following @<" + commandParts[1] + " " + commandParts[2] + ">.";
+      }
+
+      if (text.substr(0, 10) == "/unfollow ") {
+        var commandParts = text.split(" ");
+        parts.push({"text": tweet.author, type: "me"});
+        isMe = true;
+        text = "is not following @" + commandParts[1] + " anymore.";
+      }
+
       while (text.length > 0 || maxCount == 0)
       {
         var isMatch = false;
