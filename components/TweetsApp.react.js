@@ -157,10 +157,6 @@ module.exports = TweetsApp = React.createClass({
     this.setState({tab: "following"});
   },
 
-  showConfigTab: function(){
-    this.setState({tab: "config"});
-  },
-
   // Method to load tweets fetched from the server
   loadPagedTweets: function(tweets){
 
@@ -431,7 +427,7 @@ module.exports = TweetsApp = React.createClass({
         <Following following={this.state.following} onFollowUser={this.followUser}  onUnfollowUser={this.unfollowUser} />
         <Config onChangeLogin={this.changeLogin} enableGithub={this.state.enableGithub} />
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets} />
-        <Footer onNotificationsToggle={this.onNotificationsToggle} notificationsActivated={this.state.notificationsActivated} tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} onConfigTab ={this.showConfigTab} />
+        <Footer onNotificationsToggle={this.onNotificationsToggle} notificationsActivated={this.state.notificationsActivated} tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} />
       </div>
     )
 

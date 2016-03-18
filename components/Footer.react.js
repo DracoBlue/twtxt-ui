@@ -18,7 +18,6 @@ module.exports = Footer = React.createClass({
 
     return (
       <footer className={"show-" + this.props.tab}>
-            <a href="#top" className="tab config" onClick={this.props.onConfigTab}>Login</a>
             <a href="#top" className="tab timeline" onClick={this.props.onTimelineTab}>Timeline {timelineCountInfo}</a>
             <a href="#top" className="tab mentions" onClick={this.props.onMentionsTab}>Mentions {mentionsCountInfo}</a>
             <a href="#top" className="tab following" onClick={this.props.onFollowingTab}>Following ({this.props.following.length})</a>
