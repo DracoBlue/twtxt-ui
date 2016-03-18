@@ -397,6 +397,11 @@ module.exports = TweetsApp = React.createClass({
 
   unfollowUser: function(url) {
     this.fetcher.unfollow(url);
+
+    if (this.store) {
+      this.store.unfollowUser(url, function(err) {
+      });
+    }
   },
 
   changeLogin: function(url) {

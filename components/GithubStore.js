@@ -61,7 +61,42 @@ GithubStore.prototype.followUser = function(nickname, url, cb) {
   this.postMessage("/follow " + nickname + " " + url, cb);
 };
 
+GithubStore.prototype.unfollowUser = function(url, cb) {
+  var that = this;
+
+  this.modifyTwtxtTxt(function(currentContent) {
+    var newContent = [];
+    currentContent.split("\n").forEach(function(line) {
+      if (line.match(/^.+\t\/[^ ]+ /)) {
+        console.log('line match', line);
+        var cmd = line.match(/^.+\t\/([^ ]+) /)[1];
+        if (cmd == "follow") {
+          var secondParameterMatch = line.match(/^.+\t\/[^ ]+ [^ ]+ ([^ ]+)/);
+          if (secondParameterMatch) {
+            if (secondParameterMatch[1] == url) {
+              /* skip /follow nickname url entry in newContent!*/
+              return ;
+            }
+          }
+        }
+      }
+
+      newContent.push(line);
+    });
+    
+    return newContent.join("\n");
+  }, cb);
+};
+
 GithubStore.prototype.postMessage = function(text, cb) {
+  var that = this;
+
+  this.modifyTwtxtTxt(function(currentContent) {
+    return currentContent + "\n" + (new Date().toISOString()) + "\t" + text;
+  }, cb);
+};
+
+GithubStore.prototype.modifyTwtxtTxt = function(modifyCallback, cb) {
   var that = this;
 
   this.fetchTwtxtTxt(function(err, currentContent, currentBody) {
@@ -83,10 +118,10 @@ GithubStore.prototype.postMessage = function(text, cb) {
       }
     );
 
-    var newContent = currentContent + "\n" + (new Date().toISOString()) + "\t" + text;
+    var newContent = modifyCallback(currentContent);
 
     request.write(JSON.stringify({
-      "message": "posted a new message to twtxt.txt",
+      "message": "updated twtxt.txt",
       "content": btoa(newContent),
       "sha": currentBody.sha
     }));
