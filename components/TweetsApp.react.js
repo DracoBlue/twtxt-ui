@@ -340,8 +340,8 @@ module.exports = TweetsApp = React.createClass({
           console.log('contents!', metaData);
           that.store = githubStore;
           that.setState({canPost: true});
-          if (metaData.twtxtUrl) {
-            that.fetcher.login(metaData.twtxtUrl, metaData.nick);
+          if (metaData.twturl) {
+            that.fetcher.login(metaData.twturl, metaData.nick);
           } else {
             that.fetcher.login("https://" + queryStringParts.githubLogin.toLowerCase() + '.github.io/twtxt.txt', queryStringParts.githubLogin.toLowerCase());
           }
