@@ -34,18 +34,56 @@ GithubStore.prototype.fetchTwtxtTxt = function(cb) {
 GithubStore.prototype.getMetaData = function(cb) {
   var that = this;
 
+  var filterFollowerByNick = function(followers, nick) {
+    var newFollowers = [];
+    followers.forEach(function(follower) {
+      if (follower.nick != nick) {
+        newFollowers.push(follower);
+      }
+    });
+
+    return newFollowers;
+  };
+
   this.fetchTwtxtTxt(function(err, twtxtTxtContent) {
     if (err) {
       cb(err)
     } else {
-      var metaData = {};
-      twtxtTxtContent.split("\n").forEach(function(line) {
+      var metaData = {
+        "following": []
+      };
+      var lines = twtxtTxtContent.split("\n");
+      lines.sort();
+      lines.forEach(function(line) {
         if (line.match(/^.+\t\/[^ ]+ /)) {
           var cmd = line.match(/^.+\t\/([^ ]+) /)[1];
           if (cmd) {
+            console.log("cmd", cmd);
             var firstParameterMatch = line.match(/^.+\t\/[^ ]+ ([^ ]+)/);
             if (firstParameterMatch) {
-              metaData[cmd] = firstParameterMatch[1];
+              console.log("firstParameterMatch", firstParameterMatch);
+              if (cmd == "follow"|| cmd == "unfollow") {
+                metaData["following"] = metaData["following"] || [];
+                if (cmd == "unfollow") {
+                  metaData["following"] = filterFollowerByNick(metaData["following"], firstParameterMatch[1]);
+                }
+                if (cmd == "follow") {
+
+                  var secondParameterMatch = line.match(/^.+\t\/[^ ]+ [^ ]+ ([^ ]+)/);
+                  console.log("secondParameterMatch", secondParameterMatch);
+                  if (secondParameterMatch) {
+                    metaData["following"] = filterFollowerByNick(metaData["following"], firstParameterMatch[1]);
+                    metaData["following"].push({
+                      "nick": firstParameterMatch[1],
+                      "url": secondParameterMatch[1]
+                    })
+                  }
+                }
+              } else if (cmd == "me") {
+                /* ignore */
+              } else {
+                metaData[cmd] = firstParameterMatch[1];
+              }
             }
           }
         }

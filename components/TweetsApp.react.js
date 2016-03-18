@@ -369,6 +369,9 @@ module.exports = TweetsApp = React.createClass({
             that.fetcher.login("https://" + queryStringParts.githubLogin.toLowerCase() + '.github.io/twtxt.txt', queryStringParts.githubLogin.toLowerCase());
           }
           that.showTimelineTab();
+
+          that.setState({following: metaData.following});
+
         });
       }
       document.location.hash = "#top";
