@@ -35,6 +35,20 @@ module.exports = Tweet = React.createClass({
         text = "is not following @" + commandParts[1] + " anymore.";
       }
 
+      if (text.substr(0, 6) == "/nick ") {
+        var commandParts = text.split(" ");
+        parts.push({"text": tweet.author, type: "me"});
+        isMe = true;
+        text = "set the nick to " + commandParts[1] + "";
+      }
+
+      if (text.substr(0, 8) == "/twturl ") {
+        var commandParts = text.split(" ");
+        parts.push({"text": tweet.author, type: "me"});
+        isMe = true;
+        text = "set the twturl to " + commandParts[1] + "";
+      }
+
       while (text.length > 0 || maxCount == 0)
       {
         var isMatch = false;
