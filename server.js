@@ -59,7 +59,10 @@ if (process.env.GITHUB_CLIENT_ID) {
                     if (err) {
                       var initialContent = [
                         new Date().toISOString() + "\t/nick " + username,
-                        new Date().toISOString() + "\t/twturl https://" + repositoryName + "/twtxt.txt"
+                        new Date().toISOString() + "\t/twturl https://" + repositoryName + "/twtxt.txt",
+                        new Date().toISOString() + "\t/follow dracoblue https://dracoblue.net/twtxt.txt",
+                        new Date().toISOString() + "\t/follow buckket https://buckket.org/twtxt.txt",
+                        new Date().toISOString() + "\t/follow twtxt_news https://buckket.org/twtxt_news.txt"
                       ].join("\n");
 
                       repository.createContents('twtxt.txt', 'created twtxt.txt', initialContent, function(err) {
