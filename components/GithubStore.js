@@ -55,10 +55,10 @@ GithubStore.prototype.getMetaData = function(cb) {
   });
 };
 
-GithubStore.prototype.followUser = function(nickname, url, cb) {
+GithubStore.prototype.followUser = function(nick, url, cb) {
   var that = this;
 
-  this.postMessage("/follow " + nickname + " " + url, cb);
+  this.postMessage("/follow " + nick + " " + url, cb);
 };
 
 GithubStore.prototype.unfollowUser = function(url, cb) {
@@ -74,7 +74,7 @@ GithubStore.prototype.unfollowUser = function(url, cb) {
           var secondParameterMatch = line.match(/^.+\t\/[^ ]+ [^ ]+ ([^ ]+)/);
           if (secondParameterMatch) {
             if (secondParameterMatch[1] == url) {
-              /* skip /follow nickname url entry in newContent!*/
+              /* skip /follow nick url entry in newContent!*/
               return ;
             }
           }
@@ -83,7 +83,7 @@ GithubStore.prototype.unfollowUser = function(url, cb) {
 
       newContent.push(line);
     });
-    
+
     return newContent.join("\n");
   }, cb);
 };

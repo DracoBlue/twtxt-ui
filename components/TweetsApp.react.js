@@ -229,9 +229,9 @@ module.exports = TweetsApp = React.createClass({
 
     if (!store.get('following')) {
       store.set('following', [
-        {"url": 'https://buckket.org/twtxt_news.txt', "nickname": "twtxt_news"},
-        {"url": 'https://buckket.org/twtxt.txt', "nickname": "buckket"},
-        {"url": 'https://dracoblue.net/twtxt.txt', "nickname": "dracoblue"}
+        {"url": 'https://buckket.org/twtxt_news.txt', "nick": "twtxt_news"},
+        {"url": 'https://buckket.org/twtxt.txt', "nick": "buckket"},
+        {"url": 'https://dracoblue.net/twtxt.txt', "nick": "dracoblue"}
       ]);
     }
 
@@ -329,10 +329,10 @@ module.exports = TweetsApp = React.createClass({
       });
 
       updated.sort(function(a, b) {
-        if (a.nickname == b.nickname) {
+        if (a.nick == b.nick) {
           return 0;
         }
-        return a.nickname > b.nickname ? -1 : 1;
+        return a.nick > b.nick ? -1 : 1;
       });
 
       that.setState({following: updated});
@@ -343,10 +343,10 @@ module.exports = TweetsApp = React.createClass({
         });
 
         users.sort(function(a, b) {
-          if (a.nickname == b.nickname) {
+          if (a.nick == b.nick) {
             return 0;
           }
-          return a.nickname > b.nickname ? -1 : 1;
+          return a.nick > b.nick ? -1 : 1;
         });
 
         that.setState({following: users});
@@ -379,11 +379,11 @@ module.exports = TweetsApp = React.createClass({
 
   },
 
-  followUser: function(nickname, url) {
-    this.fetcher.follow(nickname, url);
+  followUser: function(nick, url) {
+    this.fetcher.follow(nick, url);
 
     if (this.store) {
-      this.store.followUser(nickname, url, function(err) {
+      this.store.followUser(nick, url, function(err) {
       });
     }
   },

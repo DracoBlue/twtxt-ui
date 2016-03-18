@@ -15,7 +15,7 @@ TweetFetcher.prototype.login = function(url, nick) {
   }
 };
 
-TweetFetcher.prototype.follow = function(nickname, url) {
+TweetFetcher.prototype.follow = function(nick, url) {
   var that = this;
   var following = [];
 
@@ -24,7 +24,7 @@ TweetFetcher.prototype.follow = function(nickname, url) {
   });
 
   following.push({
-    "nickname": nickname,
+    "nick": nick,
     "url": url
   });
 
@@ -37,12 +37,12 @@ TweetFetcher.prototype.follow = function(nickname, url) {
   }
 };
 
-TweetFetcher.prototype.unfollow = function(nicknameOrUrl) {
+TweetFetcher.prototype.unfollow = function(nickOrUrl) {
   var that = this;
   var following = [];
 
   store.get('following').forEach(function(user) {
-    if (user.nickname != nicknameOrUrl && user.url != nicknameOrUrl) {
+    if (user.nick != nickOrUrl && user.url != nickOrUrl) {
       following.push(user);
     }
   });
@@ -138,7 +138,7 @@ TweetFetcher.prototype.fetchAll = function(cb) {
         body = body.join("");
         itemsLeft -= 1;
 
-        that.parseRawTweets(user.nickname, url, body).forEach(function(tweet) {
+        that.parseRawTweets(user.nick, url, body).forEach(function(tweet) {
           tweets.push(tweet);
         });
 
@@ -199,7 +199,7 @@ TweetFetcher.prototype.decodeXml = function(string) {
     });
 };
 
-TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
+TweetFetcher.prototype.parseRawTweets = function(nick, url, rawTweets) {
   var that = this;
   var tweets = [];
 
@@ -220,7 +220,7 @@ TweetFetcher.prototype.parseRawTweets = function(nickname, url, rawTweets) {
           id: md5(url + "\t" + row),
           timestamp: moment(match[1]),
           displayTime: moment(match[1]).format('YYYY/MM/DD HH:mm'),
-          author: nickname,
+          author: nick,
           author_url: url,
           text: text,
           rawText: rawText
@@ -274,7 +274,7 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
           id: id,
           timestamp: moment(match[2]),
           displayTime: moment(match[2]).format('YYYY/MM/DD HH:mm'),
-          author: author.nickname,
+          author: author.nick,
           author_url: author.url,
           text: text,
           rawText: rawText
@@ -290,7 +290,7 @@ TweetFetcher.prototype.extractAuthor = function(string) {
   var currentMatch = string.match(/@<([^ ]+) ([^> ]+)>/);
   if (currentMatch) {
     return {
-      "nickname": currentMatch[1],
+      "nick": currentMatch[1],
       "url": currentMatch[2]
     };
   }
@@ -298,13 +298,13 @@ TweetFetcher.prototype.extractAuthor = function(string) {
   var currentMatch = string.match(/@<([^> ]+)>/);
   if (currentMatch) {
     return {
-      "nickname": currentMatch[1],
+      "nick": currentMatch[1],
       "url": currentMatch[1]
     };
   }
 
   return {
-    "nickname": string,
+    "nick": string,
     "url": string
   }
 };
