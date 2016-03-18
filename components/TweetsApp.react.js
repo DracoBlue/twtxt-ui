@@ -6,7 +6,7 @@ var Mentions = require('./Mentions.react.js');
 var Following = require('./Following.react.js');
 var Footer = require('./Footer.react.js');
 var Loader = require('./Loader.react.js');
-var Config = require('./Config.react.js');
+var Login = require('./Login.react.js');
 var NotificationBar = require('./NotificationBar.react.js');
 var urlUtils = require('url');
 var querystring = require('querystring');
@@ -242,7 +242,7 @@ module.exports = TweetsApp = React.createClass({
       mentions: [],
       following: [],
       enableGithub: props.enableGithub || false,
-      tab: 'config',
+      tab: 'login',
       count: 0,
       mentions_count: 0,
       page: 0,
@@ -425,7 +425,7 @@ module.exports = TweetsApp = React.createClass({
         <Tweets tweets={this.state.tweets} canPost={this.state.canPost} onPostMessage={this.postMessage} />
         <Mentions tweets={this.state.mentions} />
         <Following following={this.state.following} onFollowUser={this.followUser}  onUnfollowUser={this.unfollowUser} />
-        <Config onChangeLogin={this.changeLogin} enableGithub={this.state.enableGithub} />
+        <Login onChangeLogin={this.changeLogin} enableGithub={this.state.enableGithub} />
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets} />
         <Footer onNotificationsToggle={this.onNotificationsToggle} notificationsActivated={this.state.notificationsActivated} tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} />
       </div>

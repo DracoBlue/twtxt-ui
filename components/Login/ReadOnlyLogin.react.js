@@ -3,7 +3,7 @@
 var React = require('react');
 var store = require('store');
 
-module.exports = Login = React.createClass({
+module.exports = ReadOnlyLogin = React.createClass({
 
   getInitialState: function() {
     return {url: store.get('url') || "https://buckket.org/twtxt.txt"};
