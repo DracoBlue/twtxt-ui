@@ -33,7 +33,7 @@ Screenshot:
 * Show `@mentions` of that twtxt-Url
 * Browser-Notifications on new Mentions/Tweets
 * Stored in LocalStorage
-* **Missing**: Posting new Twtxt-Messages. Please use the official cli client at <https://github.com/buckket/twtxt> for this (so far)
+* Post new messages (if logged in with Github)
 
 ## Github Integration
 
