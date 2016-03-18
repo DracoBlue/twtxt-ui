@@ -375,7 +375,27 @@ module.exports = TweetsApp = React.createClass({
 
   postMessage: function(text) {
     var that = this;
-    this.store.postMessage(text, function(err) {
+
+    var textWithExpandedMentions = [];
+
+    var followingNickToUrlMap = {};
+    this.state.following.forEach(function(user) {
+      followingNickToUrlMap[user.nick.toLowerCase()] = user.url;
+    });
+
+    text.split(/(@[a-zA-Z0-9_-]+)/).forEach(function(word) {
+      if (word.substr(0, 1) == "@") {
+        var nick = word.substr(1).toLowerCase();
+        if (followingNickToUrlMap.hasOwnProperty(nick)) {
+          textWithExpandedMentions.push("<@"+ nick + " " + followingNickToUrlMap[nick] + ">");
+          return ;
+        }
+      }
+
+      textWithExpandedMentions.push(word);
+    });
+
+    this.store.postMessage(textWithExpandedMentions.join(""), function(err) {
       that.showTimelineTab();
     });
   },
