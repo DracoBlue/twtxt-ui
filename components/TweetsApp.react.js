@@ -6,10 +6,13 @@ var Mentions = require('./Mentions.react.js');
 var Following = require('./Following.react.js');
 var Footer = require('./Footer.react.js');
 var Loader = require('./Loader.react.js');
-var Config = require('./Config.react.js');
+var Login = require('./Login.react.js');
 var NotificationBar = require('./NotificationBar.react.js');
+var urlUtils = require('url');
+var querystring = require('querystring');
 var store = require('store');
 var TweetFetcher = require('./TweetFetcher.js');
+var GithubStore = require('./GithubStore.js');
 /* FIXME: hack, so we can use the notify lib with browserify! */
 global.window = global;
 var notify = require('html5-desktop-notifications');
@@ -154,10 +157,6 @@ module.exports = TweetsApp = React.createClass({
     this.setState({tab: "following"});
   },
 
-  showConfigTab: function(){
-    this.setState({tab: "config"});
-  },
-
   // Method to load tweets fetched from the server
   loadPagedTweets: function(tweets){
 
@@ -230,19 +229,20 @@ module.exports = TweetsApp = React.createClass({
 
     if (!store.get('following')) {
       store.set('following', [
-        {"url": 'https://buckket.org/twtxt_news.txt', "nickname": "twtxt_news"},
-        {"url": 'https://buckket.org/twtxt.txt', "nickname": "buckket"},
-        {"url": 'https://dracoblue.net/twtxt.txt', "nickname": "dracoblue"}
+        {"url": 'https://buckket.org/twtxt_news.txt', "nick": "twtxt_news"},
+        {"url": 'https://buckket.org/twtxt.txt', "nick": "buckket"},
+        {"url": 'https://dracoblue.net/twtxt.txt', "nick": "dracoblue"}
       ]);
     }
 
     // Set initial application state using props
     return {
       notificationsActivated: notificationsActivated,
-      tweets: props.tweets || [],
-      mentions: props.mentions || [],
-      following: props.following || [],
-      tab: 'config',
+      tweets: [],
+      mentions: [],
+      following: [],
+      enableGithub: props.enableGithub || false,
+      tab: 'login',
       count: 0,
       mentions_count: 0,
       page: 0,
@@ -272,98 +272,141 @@ module.exports = TweetsApp = React.createClass({
 
     this.fetcher = fetcher;
 
-    fetcher.fetchAll(function(tweets) {
-      var updated = that.state.tweets;
+    var initializeFetcher = function() {
+      fetcher.fetchAll(function(tweets) {
+        var updated = that.state.tweets;
 
-      tweets.forEach(function(tweet) {
-        tweet.active = true;
-        updated.push(tweet);
-      });
-
-      updated.sort(function(a, b) {
-        if (a.timestamp.unix() == b.timestamp.unix()) {
-          return 0;
-        }
-        return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
-      });
-
-      that.setState({tweets: updated, count: 0});
-
-      fetcher.notifyOnNewTweets(function(tweets) {
         tweets.forEach(function(tweet) {
-          self.addTweet(tweet);
-        })
-      });
-    });
-
-    fetcher.fetchAllMentions(function(tweets) {
-      var updated = that.state.mentions;
-
-      tweets.forEach(function(tweet) {
-        tweet.active = true;
-        updated.push(tweet);
-      });
-
-      updated.sort(function(a, b) {
-        if (a.timestamp.unix() == b.timestamp.unix()) {
-          return 0;
-        }
-        return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
-      });
-
-      that.setState({mentions: updated, mentions_count: 0});
-
-      fetcher.notifyOnNewMentions(function(tweets) {
-        tweets.forEach(function(tweet) {
-          self.addMention(tweet);
-        })
-      });
-    });
-
-    fetcher.fetchAllFollowing(function(users) {
-      var updated = that.state.following;
-
-      users.forEach(function(user) {
-        user.active = true;
-        updated.push(user);
-      });
-
-      updated.sort(function(a, b) {
-        if (a.nickname == b.nickname) {
-          return 0;
-        }
-        return a.nickname > b.nickname ? -1 : 1;
-      });
-
-      that.setState({following: updated});
-
-      fetcher.notifyOnUpdatedFollowing(function(users) {
-        users.forEach(function(user) {
-          user.active = true;
+          tweet.active = true;
+          updated.push(tweet);
         });
 
-        users.sort(function(a, b) {
-          if (a.nickname == b.nickname) {
+        updated.sort(function(a, b) {
+          if (a.timestamp.unix() == b.timestamp.unix()) {
             return 0;
           }
-          return a.nickname > b.nickname ? -1 : 1;
+          return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
         });
 
-        that.setState({following: users});
+        that.setState({tweets: updated, count: 0});
+
+        fetcher.notifyOnNewTweets(function(tweets) {
+          tweets.forEach(function(tweet) {
+            self.addTweet(tweet);
+          })
+        });
       });
-    });
+
+      fetcher.fetchAllMentions(function(tweets) {
+        var updated = that.state.mentions;
+
+        tweets.forEach(function(tweet) {
+          tweet.active = true;
+          updated.push(tweet);
+        });
+
+        updated.sort(function(a, b) {
+          if (a.timestamp.unix() == b.timestamp.unix()) {
+            return 0;
+          }
+          return a.timestamp.unix() > b.timestamp.unix() ? -1 : 1;
+        });
+
+        that.setState({mentions: updated, mentions_count: 0});
+
+        fetcher.notifyOnNewMentions(function(tweets) {
+          tweets.forEach(function(tweet) {
+            self.addMention(tweet);
+          })
+        });
+      });
+
+      fetcher.fetchAllFollowing(function(users) {
+        that.setState({following: users});
+
+        fetcher.notifyOnUpdatedFollowing(function(users) {
+          that.setState({following: users});
+        });
+      });
+    };
+
+
+    if (document.location.toString().indexOf('#?') != -1) {
+      var queryStringParts = querystring.parse(document.location.toString().substr(document.location.toString().indexOf('#?') + 2));
+      if (queryStringParts.githubLogin && queryStringParts.githubAccessToken) {
+        var githubStore = new GithubStore(queryStringParts.githubAccessToken, queryStringParts.githubLogin.toLowerCase());
+
+        githubStore.getMetaData(function(err, metaData) {
+          console.log('contents!', metaData);
+          that.store = githubStore;
+          that.setState({canPost: true});
+          if (metaData.twturl) {
+            that.fetcher.login(metaData.twturl, metaData.nick);
+          } else {
+            that.fetcher.login("https://" + queryStringParts.githubLogin.toLowerCase() + '.github.io/twtxt.txt', queryStringParts.githubLogin.toLowerCase());
+          }
+          that.showTimelineTab();
+
+          store.set('following', metaData.following);
+
+          initializeFetcher();
+        });
+      } else {
+        initializeFetcher();
+      }
+      document.location.hash = "#top";
+    } else {
+      initializeFetcher();
+    }
 
     // Attach scroll event to the window for infinity paging
     window.addEventListener('scroll', this.checkWindowScroll);
 
   },
 
-  followUser: function(nickname, url) {
-    this.fetcher.follow(nickname, url);
+  followUser: function(nick, url) {
+    this.fetcher.follow(nick, url);
+
+    if (this.store) {
+      this.store.followUser(nick, url, function(err) {
+      });
+    }
+  },
+
+  postMessage: function(text) {
+    var that = this;
+
+    var textWithExpandedMentions = [];
+
+    var followingNickToUrlMap = {};
+    this.state.following.forEach(function(user) {
+      followingNickToUrlMap[user.nick.toLowerCase()] = user.url;
+    });
+
+    text.split(/(@[a-zA-Z0-9_-]+)/).forEach(function(word) {
+      if (word.substr(0, 1) == "@") {
+        var nick = word.substr(1).toLowerCase();
+        if (followingNickToUrlMap.hasOwnProperty(nick)) {
+          textWithExpandedMentions.push("<@"+ nick + " " + followingNickToUrlMap[nick] + ">");
+          return ;
+        }
+      }
+
+      textWithExpandedMentions.push(word);
+    });
+
+    this.store.postMessage(textWithExpandedMentions.join(""), function(err) {
+      that.showTimelineTab();
+    });
   },
 
   unfollowUser: function(url) {
     this.fetcher.unfollow(url);
+
+    if (this.store) {
+      this.store.unfollowUser(url, function(err) {
+      });
+    }
   },
 
   changeLogin: function(url) {
@@ -399,12 +442,12 @@ module.exports = TweetsApp = React.createClass({
     // <Loader paging={this.state.paging} />
     return (
       <div className={"tweets-app show-" + this.state.tab}>
-        <Tweets tweets={this.state.tweets} />
+        <Tweets tweets={this.state.tweets} canPost={this.state.canPost} onPostMessage={this.postMessage} />
         <Mentions tweets={this.state.mentions} />
         <Following following={this.state.following} onFollowUser={this.followUser}  onUnfollowUser={this.unfollowUser} />
-        <Config onChangeLogin={this.changeLogin} />
+        <Login onChangeLogin={this.changeLogin} enableGithub={this.state.enableGithub} />
         <NotificationBar count={this.state.count} onShowNewTweets={this.showNewTweets} />
-        <Footer onNotificationsToggle={this.onNotificationsToggle} notificationsActivated={this.state.notificationsActivated} tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} onConfigTab ={this.showConfigTab} />
+        <Footer onNotificationsToggle={this.onNotificationsToggle} notificationsActivated={this.state.notificationsActivated} tab={this.state.tab} following={this.state.following} timeline_count={this.state.count} mentions_count={this.state.mentions_count} onTimelineTab={this.showTimelineTab} onMentionsTab={this.showMentionsTab} onFollowingTab ={this.showFollowingTab} />
       </div>
     )
 

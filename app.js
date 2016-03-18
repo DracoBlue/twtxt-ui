@@ -10,6 +10,6 @@ var initialState = JSON.parse(document.getElementById('initial-state').innerHTML
 
 // Render the components, picking up where react left off on the server
 ReactDOM.render(
-  <TweetsApp tweets={initialState}/>,
+  <TweetsApp enableGithub={initialState.enableGithub}/>,
   document.getElementById('react-app')
 );

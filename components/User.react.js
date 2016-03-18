@@ -13,10 +13,10 @@ module.exports = User = React.createClass({
     var user = this.props.user;
   // FIXME: add the time here?
     return (
-      <li className={"tweet" + (user.active ? ' active' : '')}>
+      <li className={"tweet active"}>
         <blockquote>
           <cite>
-            <a href={user.url}>@{user.nickname}</a>
+            <a href={user.url}>@{user.nick}</a>
             <span className="screen-name">{user.displayTime}</span>
           </cite>
           <span className="content">

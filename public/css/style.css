@@ -82,10 +82,22 @@ footer.show-following .tab.following {
     color: #2c3e50;
 }
 
-footer.show-config .tab.config {
+footer.show-login .tab.following,
+footer.show-login .tab.timeline,
+footer.show-login .tab.logout,
+footer.show-login .tab.mentions{
+    display: none;
+}
+
+.tab.login {
+    display: none;
+}
+
+footer.show-login .tab.login {
     background-color: #ffffff;
     font-weight: bold;
     color: #2c3e50;
+    display: inline-block;
 }
 
 .loader
@@ -143,26 +155,26 @@ footer.show-config .tab.config {
 }
 
 .tweets-app.show-mentions .timeline.tweets,
-.tweets-app.show-mentions .config.tweets,
+.tweets-app.show-mentions .login.tweets,
 .tweets-app.show-mentions .following.users {
     display: none;
 }
 
 .tweets-app.show-timeline .mentions.tweets,
-.tweets-app.show-timeline .config.tweets,
+.tweets-app.show-timeline .login.tweets,
 .tweets-app.show-timeline .following.users {
     display: none;
 }
 
 .tweets-app.show-following .mentions.tweets,
-.tweets-app.show-following .config.tweets,
+.tweets-app.show-following .login.tweets,
 .tweets-app.show-following .timeline.tweets {
     display: none;
 }
 
-.tweets-app.show-config .mentions.tweets,
-.tweets-app.show-config .following.users,
-.tweets-app.show-config .timeline.tweets {
+.tweets-app.show-login .mentions.tweets,
+.tweets-app.show-login .following.users,
+.tweets-app.show-login .timeline.tweets {
     display: none;
 }
 

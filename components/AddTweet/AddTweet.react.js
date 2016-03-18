@@ -5,10 +5,10 @@ var React = require('react');
 module.exports = AddTweet = React.createClass({
 
   getInitialState: function() {
-    return {nickname: '', url: ''};
+    return {nick: '', url: ''};
   },
   handleNicknameChange: function(e) {
-    this.setState({nickname: e.target.value});
+    this.setState({nick: e.target.value});
   },
   handleUrlChange: function(e) {
     this.setState({url: e.target.value});
@@ -17,16 +17,16 @@ module.exports = AddTweet = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
 
-    var nickname = this.state.nickname.trim();
+    var nick = this.state.nick.trim();
     var url = this.state.url.trim();
-    if (!url || !nickname) {
+    if (!url || !nick) {
       return;
     }
 
-    this.props.onFollowUser(nickname, url);
+    this.props.onFollowUser(nick, url);
 
     // TODO: send request to the server
-    this.setState({nickname: '', url: ''});
+    this.setState({nick: '', url: ''});
   },
 
   render: function() {
@@ -38,7 +38,7 @@ module.exports = AddTweet = React.createClass({
           className="text-field"
           type="text"
           placeholder="Nickname (e.g. example)"
-          value={this.state.nickname}
+          value={this.state.nick}
           onChange={this.handleNicknameChange}
         />
         <input
