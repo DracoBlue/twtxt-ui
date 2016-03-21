@@ -116,9 +116,13 @@ module.exports = {
           });
 
         }).on('error', function (e) {
-          res.set('Content-Type', 'text/plain');
-          res.status(500);
-          res.send(e.message || "error");
+          try {
+            res.set('Content-Type', 'text/plain');
+            res.status(500);
+            res.send(e.message || "error");
+          } catch (error) {
+            /* swallow */
+          }
         }).on('timeout', function(e) {
           res.set('Content-Type', 'text/plain');
           res.status(504);
