@@ -70,7 +70,7 @@ TweetFetcher.prototype.initializeTweetsTimer = function() {
     that.fetchAll(function(tweets) {
       that.onNewTweets(tweets);
     });
-  }, 60000);
+  }, 2 * 60000);
 };
 
 TweetFetcher.prototype.initializeMentionsTimer = function() {
@@ -80,7 +80,7 @@ TweetFetcher.prototype.initializeMentionsTimer = function() {
     that.fetchAllMentions(function(tweets) {
       that.onNewMentions(tweets);
     });
-  }, 60000);
+  }, 2 * 60000);
 };
 
 TweetFetcher.prototype.fetchAllMentions = function(cb) {
