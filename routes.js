@@ -68,22 +68,27 @@ module.exports = {
     var key = md5(req.query.url);
 
     var deliverWithLimit = function(body) {
-      res.set('Content-Type', 'text/plain');
-      if (limit != 0) {
-        var lines = body.split("\n");
-        if (lines.length > limit) {
-          lines.sort();
-          var limitedBody = lines.slice(-limit).join("\n");
-          res.set('Etag', md5(limitedBody));
-          res.send(limitedBody);
+      try {
+        res.set('Content-Type', 'text/plain');
+        if (limit != 0) {
+          var lines = body.split("\n");
+          if (lines.length > limit) {
+            lines.sort();
+            var limitedBody = lines.slice(-limit).join("\n");
+            res.set('Etag', md5(limitedBody));
+            res.send(limitedBody);
+          } else {
+            res.set('Etag', md5(body));
+            res.send(body);
+          }
+
         } else {
           res.set('Etag', md5(body));
           res.send(body);
         }
+      } catch (error) {
+        /* swallow */
 
-      } else {
-        res.set('Etag', md5(body));
-        res.send(body);
       }
     };
 
