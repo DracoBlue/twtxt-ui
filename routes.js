@@ -7,6 +7,7 @@ var JSX = require('node-jsx').install(),
   http = require('http'),
   Memcached = require('memcached'),
   ReactDOMServer = require('react-dom/server');
+var fs = require('fs');
 var info = JSON.parse(fs.readFileSync(__dirname + '/package.json'));
 info.version = info.version || 'dev';
 
