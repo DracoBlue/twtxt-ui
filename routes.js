@@ -121,7 +121,7 @@ module.exports = {
           res.send(e.message || "error");
         }).on('timeout', function(e) {
           res.set('Content-Type', 'text/plain');
-          res.status(505);
+          res.status(504);
           res.send("timeout");
         });
         req.setTimeout(5000);
