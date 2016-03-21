@@ -7,6 +7,8 @@ var JSX = require('node-jsx').install(),
   http = require('http'),
   Memcached = require('memcached'),
   ReactDOMServer = require('react-dom/server');
+var info = JSON.parse(fs.readFileSync(__dirname + '/package.json'));
+info.version = info.version || 'dev';
 
 
 var cache = new Memcached((process.env.MEMCACHED_HOST || "localhost") + ":" + (process.env.MEMCACHED_PORT || "11211"))
@@ -61,7 +63,7 @@ module.exports = {
       path: urlParts['path'],
       method: 'GET',
       headers: {
-        "User-Agent": "twtxt-registry/dev"
+        "User-Agent": "twtxt-ui/" + info.version
       }
     };
 
