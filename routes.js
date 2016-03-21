@@ -39,6 +39,8 @@ module.exports = {
       return ;
     }
 
+    var limit = req.query.limit || 0;
+
     var client = http;
     var urlParts = url.parse(req.query.url);
 
@@ -65,6 +67,26 @@ module.exports = {
 
     var key = md5(req.query.url);
 
+    var deliverWithLimit = function(body) {
+      res.set('Content-Type', 'text/plain');
+      if (limit != 0) {
+        var lines = body.split("\n");
+        if (lines.length > limit) {
+          lines.sort();
+          var limitedBody = lines.slice(-limit).join("\n");
+          res.set('Etag', md5(limitedBody));
+          res.send(limitedBody);
+        } else {
+          res.set('Etag', md5(body));
+          res.send(body);
+        }
+
+      } else {
+        res.set('Etag', md5(body));
+        res.send(body);
+      }
+    };
+
     cache.get('content-' + key, function(err, memcacheContent) {
       cache.get('last-modified-since-' + key, function(err, memcacheLastModified) {
 
@@ -78,9 +100,7 @@ module.exports = {
             body.push(chunk);
           }).on('end', function() {
             if (clientRes.statusCode == 304) {
-              res.set('Content-Type', 'text/plain');
-              res.set('Etag', md5(memcacheContent));
-              res.send(memcacheContent);
+              deliverWithLimit(memcacheContent);
               return ;
             }
             body = Buffer.concat(body).toString();
@@ -92,9 +112,7 @@ module.exports = {
               });
             }
 
-            res.set('Content-Type', 'text/plain');
-            res.set('Etag', md5(body));
-            res.send(body);
+            deliverWithLimit(body);
           });
 
         }).on('error', function (e) {

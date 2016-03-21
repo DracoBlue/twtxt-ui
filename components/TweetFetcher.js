@@ -143,7 +143,7 @@ TweetFetcher.prototype.fetchAll = function(cb) {
     var url = user.url;
 
 
-    http.get("/api/fetchTwTxt?url=" + encodeURIComponent(url), function(res) {
+    http.get("/api/fetchTwTxt?limit=20&url=" + encodeURIComponent(url), function(res) {
 
       var body = [];
       res.on('data', function(chunk) {
