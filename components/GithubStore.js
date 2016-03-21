@@ -21,7 +21,7 @@ GithubStore.prototype.fetchTwtxtTxt = function(cb) {
       body = JSON.parse(body.join(""));
 
       if (body.encoding == "base64") {
-        cb(false, atob(body.content), body);
+        cb(false, atob(body.content.replace(/\s/g, "")), body);
       } else {
         cb(true, "Only base64 encoding is supported (" + body.encoding + " given)");
       }
