@@ -266,12 +266,10 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
     row = (row || "").trim();
 
     if (row) {
-      var match = row.match(/^([^\t]+)\t([^\t]+)\t(.+)/);
+      var match = row.match(/^([^\t]+)\t([^\t]+)\t([^\t]+)\t(.+)/);
 
-      if (match && moment(match[2]).isValid()) {
-        var author = that.extractAuthor(match[1]);
-
-        var body = match[3].trim();
+      if (match && moment(match[3]).isValid()) {
+        var body = match[4].trim();
         var rawText = body;
 
         var text = body.replace(/(<[^>]+>)/g, '');
@@ -286,10 +284,10 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
 
         tweets.push({
           id: id,
-          timestamp: moment(match[2]),
-          displayTime: moment(match[2]).format('YYYY/MM/DD HH:mm'),
-          author: author.nick,
-          author_url: author.url,
+          timestamp: moment(match[3]),
+          displayTime: moment(match[3]).format('YYYY/MM/DD HH:mm'),
+          author: match[1],
+          author_url: match[2],
           text: text,
           rawText: rawText
         });
@@ -299,30 +297,6 @@ TweetFetcher.prototype.parseRawMentions = function(rawTweets) {
 
   return tweets;
 };
-
-TweetFetcher.prototype.extractAuthor = function(string) {
-  var currentMatch = string.match(/@<([^ ]+) ([^> ]+)>/);
-  if (currentMatch) {
-    return {
-      "nick": currentMatch[1],
-      "url": currentMatch[2]
-    };
-  }
-
-  var currentMatch = string.match(/@<([^> ]+)>/);
-  if (currentMatch) {
-    return {
-      "nick": currentMatch[1],
-      "url": currentMatch[1]
-    };
-  }
-
-  return {
-    "nick": string,
-    "url": string
-  }
-};
-
 
 module.exports = TweetFetcher;
 
